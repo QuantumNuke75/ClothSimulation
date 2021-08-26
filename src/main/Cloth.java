@@ -2,7 +2,7 @@ package main;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
+//
 public class Cloth {
 	private int particleDistance = 10;
 	private int particleCountX;
