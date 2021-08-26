@@ -1,22 +1,21 @@
 package main;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import java.applet.Applet;
 import java.awt.*;
 import java.util.Dictionary;
 import java.util.Enumeration;
 
-public class Start {
+public class Start extends Applet {
 
-    //Instance
+    //Instance of this class.
     public static Start INSTANCE;
 
-    //Width and height of the main.Cloth
-    int particleCountX = 20;
-    int particleCountY = 20;
+    //Width and height of the Cloth.
+    int junctionCountX = 20;
+    int junctionCountY = 20;
 
-    //The instance of the ClothSimulation
+    //The instance of the ClothSimulation.
     ClothSimulation clothSimulation;
 
 
@@ -29,12 +28,22 @@ public class Start {
     JLabel gravityText = new JLabel("Gravity", SwingConstants.CENTER);
     JLabel dampeningText = new JLabel("Dampening", SwingConstants.CENTER);
 
+    /**
+     *
+     * @param args
+     */
     public static void main(String[] args) {
         Start.INSTANCE = new Start();
         ClothSimulation simulation = Start.INSTANCE.createWindow(2000, 2000);
         simulation.run();
     }
 
+    /**
+     *
+     * @param width
+     * @param height
+     * @return
+     */
     public ClothSimulation createWindow(int width, int height){
         frame = new JFrame("Cloth Simulationr");
         JPanel options = new JPanel();
@@ -42,7 +51,7 @@ public class Start {
         frame.setSize(width, height);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        clothSimulation = new ClothSimulation(particleCountX, particleCountY);
+        clothSimulation = new ClothSimulation(junctionCountX, junctionCountY);
 
         //Change listener for Wind slider.
         windSlider.addChangeListener(e -> {

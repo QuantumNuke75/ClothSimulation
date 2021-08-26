@@ -10,18 +10,31 @@ public class Connector {
 	Double length;
 	Double normalLength = 10.0;
 
+	/**
+	 *
+	 * @param cloth {@link Cloth}
+	 * @param start
+	 * @param end
+	 */
 	public Connector(Cloth cloth, Junction start, Junction end) {
 		this.cloth = cloth;
 		this.startJunction = start;
 		this.endJunction = end;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Double getLength() {
 		this.length = Math.pow(Math.pow(endJunction.getCurrentX() - startJunction.getCurrentX(), 2)
 				+ Math.pow(endJunction.getCurrentY() - startJunction.getCurrentY(), 2), 0.5);
 		return length;
 	}
 
+	/**
+	 *
+	 */
 	public void update() {
 		double differenceX = startJunction.getCurrentX() - endJunction.getCurrentX();
 		double differenceY = startJunction.getCurrentY() - endJunction.getCurrentY();

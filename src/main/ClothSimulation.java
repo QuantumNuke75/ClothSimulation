@@ -16,45 +16,63 @@ import javax.swing.SwingUtilities;
 
 public class ClothSimulation extends JPanel implements MouseListener, MouseMotionListener {
 
+	//Instance of the Cloth.
 	public Cloth cloth;
-	public int particleCountX;
-	public int particleCountY;
-	public Junction junctionBeingDragged = null;
-	public boolean isDragging = false;
-	
-	
 
-	public ClothSimulation(int particleCountX, int particleCountY) {
+	//The number of Junction on each axis.
+	public int junctionCountX;
+	public int junctionCountY;
+
+	//The Junction being dragged.
+	public Junction junctionBeingDragged = null;
+
+	//Whether a Junction is being dragged.
+	public boolean isDragging = false;
+
+
+	/**
+	 *
+	 * @param junctionCountX
+	 * @param junctionCountY
+	 */
+	public ClothSimulation(int junctionCountX, int junctionCountY) {
 		super();
-		this.particleCountX = particleCountX;
-		this.particleCountY = particleCountY;
-		cloth = new Cloth(particleCountX, particleCountY);
+		this.junctionCountX = junctionCountX;
+		this.junctionCountY = junctionCountY;
+		cloth = new Cloth(junctionCountX, junctionCountY);
 		addMouseListener(this);
 		addMouseMotionListener(this);
 	}
 
+	/**
+	 *
+	 */
 	public void run() {
 		long lastLoopTime = System.nanoTime();
 		final int FPS = 60;
-		final long OPTIMAL_TIME = 1000000000 / FPS;
+		final long preferredTime = 1000000000 / FPS;
 
 		while (true) {
 			long now = System.nanoTime();
 			long updateLength = now - lastLoopTime;
 			lastLoopTime = now;
-			double dT = updateLength / ((double) OPTIMAL_TIME);
+			double dT = updateLength / ((double) preferredTime);
 
 			cloth.updateCloth(dT);
 			this.repaint();
 
 			try {
-				Thread.sleep((lastLoopTime - System.nanoTime() + OPTIMAL_TIME) / 1000000);
+				Thread.sleep((lastLoopTime - System.nanoTime() + preferredTime) / 1000000);
 			} catch (Exception e) {
 
 			}
 		}
 	}
 
+	/**
+	 *
+	 * @param gr
+	 */
 	@Override
 	public void paintComponent(Graphics gr) {
 		super.paintComponent(gr);
@@ -107,14 +125,18 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
 		}
 	}
 
+	/**
+	 *
+	 * @param e
+	 */
 	@Override
 	public void mousePressed(MouseEvent e) {
 		int x = e.getX();
 		int y = e.getY();
 		Rectangle selectionBox = new Rectangle(x - 5, y - 5, 10, 10);
 
-			for (int i = 0; i < particleCountX; i++) {
-				for (int j = 0; j < particleCountY; j++) {
+			for (int i = 0; i < junctionCountX; i++) {
+				for (int j = 0; j < junctionCountY; j++) {
 					if (cloth.junctions[i][j] != null && selectionBox.contains(cloth.junctions[i][j].getCurrentX(), cloth.junctions[i][j].getPreviousY())) {
 						junctionBeingDragged = cloth.junctions[i][j];
 						this.repaint();
@@ -124,6 +146,10 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
 			}
 	}
 
+	/**
+	 *
+	 * @param e
+	 */
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		int x = e.getX();
@@ -132,6 +158,10 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
 		isDragging = true;
 	}
 
+	/**
+	 *
+	 * @param e
+	 */
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		isDragging = false;
@@ -141,14 +171,18 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
 		}
 	}
 
+	/**
+	 *
+	 * @return
+	 */
+	@Override
+	public Dimension getPreferredSize() {
+		return new Dimension(1000, 1000);
+	}
+
 	//Unused functions.
 	public void mouseEntered(MouseEvent e) {}
 	public void mouseClicked(MouseEvent e) {}
 	public void mouseExited(MouseEvent e) {}
 	public void mouseMoved(MouseEvent e) {}
-
-	@Override
-	public Dimension getPreferredSize() {
-		return new Dimension(1000, 1000);
-	}
 }

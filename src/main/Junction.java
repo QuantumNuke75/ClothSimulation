@@ -18,7 +18,13 @@ public class Junction {
 	//Whether the Junction is immovable or not
 	private boolean isMovable;
 
-
+	/**
+	 *
+	 * @param cloth {@link Cloth}
+	 * @param posX
+	 * @param posY
+	 * @param isMovable
+	 */
 	public Junction(Cloth cloth, int posX, int posY, boolean isMovable) {
 		this.cloth = cloth;
 		this.currentX = posX;
@@ -30,6 +36,10 @@ public class Junction {
 		this.isMovable = isMovable;
 	}
 
+	/**
+	 *
+	 * @param dT
+	 */
 	public void updatePosition(double dT) {
 		if (this.isMovable) {
 			double tempX = this.currentX + cloth.getDampeningCoeff() * ((this.currentX - this.previousX) + 0.5 * this.ax * dT * dT);

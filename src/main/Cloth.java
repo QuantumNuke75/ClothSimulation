@@ -1,76 +1,91 @@
 package main;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-//
+
 public class Cloth {
-	private int particleDistance = 10;
-	private int particleCountX;
-	private int particleCountY;
+    //The distance between each Junction upon creation.
+	private int junctionDistance = 10;
 
-	private int startParticleX;
-	private int startParticleY = 100;
+    //The number of Junction on each axis.
+	private int junctionCountX;
+	private int junctionCountY;
 
+    //The starting coordinate of each axis of Junction.
+	private int startJunctionX;
+	private int startJunctionY = 100;
+
+    //Acceleration altering variables.
 	private float windStrengthX = 0.0f;
 	private float gravityStrength = 0.3f;
 	private float dampeningCoeff = 0.99f;
 
-
-
+	//Delta Time
 	double dT;
 
 	Junction[][] junctions;
 	ArrayList<Connector> connectors = new ArrayList<Connector>();
 
-
-	public Cloth(int particleCountX, int particleCountY) {
-		this.particleCountX = particleCountX;
-		this.particleCountY = particleCountY;
-		startParticleX = 500 - (particleCountX * particleDistance) / 2;
-		junctions = new Junction[particleCountX][particleCountY];
+    /**
+     *
+     * @param junctionCountX
+     * @param junctionCountY
+     */
+	public Cloth(int junctionCountX, int junctionCountY) {
+		this.junctionCountX = junctionCountX;
+		this.junctionCountY = junctionCountY;
+		startJunctionX = 500 - (junctionCountX * junctionDistance) / 2;
+		junctions = new Junction[junctionCountX][junctionCountY];
 		createJunctions();
 		createConnectors();
 	}
 
+    /**
+     *
+     * @param dT
+     */
 	public void updateCloth(double dT) {
 		for (Connector connector : this.connectors) {
 				connector.update();
 		}
 
 		this.dT = dT;
-		for (int i = 0; i < particleCountX; i++) {
-			for (int j = 0; j < particleCountY; j++) {
+		for (int i = 0; i < junctionCountX; i++) {
+			for (int j = 0; j < junctionCountY; j++) {
 				if (this.junctions[i][j] != null && this.junctions[i][j].isMovable()) {
 					this.junctions[i][j].updatePosition(dT);
 				}
 			}
 		}
-
 		removeBrokenConnectors();
-
 	}
 
+    /**
+     *
+     */
 	public void createJunctions() {
-		for (int i = 0; i < particleCountX; i++) {
-			for (int j = 0; j < particleCountY; j++) {
-				this.junctions[i][j] = new Junction(this,startParticleX + (particleDistance * j), startParticleY + (particleDistance * i), (i == 0 && (j == 0 || j == particleCountY - 1 || j == particleCountY / 2)) || (i == particleCountX - 1 && (j == 0 || j == particleCountY - 1)) ? false : true);
+		for (int i = 0; i < junctionCountX; i++) {
+			for (int j = 0; j < junctionCountY; j++) {
+				this.junctions[i][j] = new Junction(this, startJunctionX + (junctionDistance * j), startJunctionY + (junctionDistance * i), (i == 0 && (j == 0 || j == junctionCountY - 1 || j == junctionCountY / 2)) || (i == junctionCountX - 1 && (j == 0 || j == junctionCountY - 1)) ? false : true);
 			}
 		}
 	}
 
+    /**
+     *
+     */
 	public void createConnectors() {
-		for (int i = 0; i < particleCountX; i++) {
-			for (int j = 0; j < particleCountY; j++) {
+		for (int i = 0; i < junctionCountX; i++) {
+			for (int j = 0; j < junctionCountY; j++) {
 
 				Junction currentJunction = junctions[i][j];
 
 
-				if (j != particleCountY - 1) {
+				if (j != junctionCountY - 1) {
 					Connector con = new Connector(this, currentJunction, junctions[i][j + 1]);
 					connectors.add(con);
 				}
 
-				if (i != particleCountX - 1) {
+				if (i != junctionCountX - 1) {
 					Connector con = new Connector(this, currentJunction, junctions[i + 1][j]);
 					connectors.add(con);
 				}
@@ -78,8 +93,9 @@ public class Cloth {
 		}
 	}
 
-	//check if the junction HAS NO CONNECTORS
-
+    /**
+     *
+     */
 	public void removeBrokenConnectors(){
 		for(Object o : this.connectors.toArray()) {
 
@@ -92,44 +108,44 @@ public class Cloth {
 		}
 	}
 
-	public int getParticleDistance() {
-		return particleDistance;
+	public int getJunctionDistance() {
+		return junctionDistance;
 	}
 
-	public void setParticleDistance(int particleDistance) {
-		this.particleDistance = particleDistance;
+	public void setJunctionDistance(int junctionDistance) {
+		this.junctionDistance = junctionDistance;
 	}
 
-	public int getParticleCountX() {
-		return particleCountX;
+	public int getJunctionCountX() {
+		return junctionCountX;
 	}
 
-	public void setParticleCountX(int particleCountX) {
-		this.particleCountX = particleCountX;
+	public void setJunctionCountX(int junctionCountX) {
+		this.junctionCountX = junctionCountX;
 	}
 
-	public int getParticleCountY() {
-		return particleCountY;
+	public int getJunctionCountY() {
+		return junctionCountY;
 	}
 
-	public void setParticleCountY(int particleCountY) {
-		this.particleCountY = particleCountY;
+	public void setJunctionCountY(int junctionCountY) {
+		this.junctionCountY = junctionCountY;
 	}
 
-	public int getStartParticleX() {
-		return startParticleX;
+	public int getStartJunctionX() {
+		return startJunctionX;
 	}
 
-	public void setStartParticleX(int startParticleX) {
-		this.startParticleX = startParticleX;
+	public void setStartJunctionX(int startJunctionX) {
+		this.startJunctionX = startJunctionX;
 	}
 
-	public int getStartParticleY() {
-		return startParticleY;
+	public int getStartJunctionY() {
+		return startJunctionY;
 	}
 
-	public void setStartParticleY(int startParticleY) {
-		this.startParticleY = startParticleY;
+	public void setStartJunctionY(int startJunctionY) {
+		this.startJunctionY = startJunctionY;
 	}
 
 	public float getWindStrengthX() {
