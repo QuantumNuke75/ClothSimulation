@@ -41,8 +41,13 @@ public class Start{
      * @param args
      */
     public static void main(String[] args) {
+        //Creates a new static instance of the Start class.
         Start.INSTANCE = new Start();
+
+        //Creates an instance of the ClothSimulation.
         ClothSimulation simulation = Start.INSTANCE.createWindow(1000, 1000);
+
+        //Begins the simulation.
         simulation.run();
     }
 
@@ -53,12 +58,22 @@ public class Start{
      * @return
      */
     public ClothSimulation createWindow(int width, int height){
+        //Create a new JFrame instance.
         frame = new JFrame("Cloth Simulation");
+
+        //Create a new JPanel instance for use in an options menu.
         JPanel options = new JPanel();
+
+        //Sets the layout of the JFrame to a {@link BorderLayout}
         frame.setLayout(new BorderLayout());
+
+        //Sets the width and height of the JFrame
         frame.setSize(width, height);
+
+        //Sets the default close operation for the JFrame
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
+        //Creates a new instance of the ClothSimulation.
         clothSimulation = new ClothSimulation(junctionCountX, junctionCountY);
 
         //Change listener for Wind slider.
@@ -104,7 +119,10 @@ public class Start{
             clothSimulation.setConnectorColor(JColorChooser.showDialog(clothSimulation, "Connector Color Picker", null));
         });
 
+        //Add the ClothSimulation JPanel to the appropriate place within the JFrame.
         frame.add(clothSimulation, BorderLayout.CENTER);
+
+        //Add the options JPanel to the appropriate place within the JFrame.
         frame.add(options, BorderLayout.SOUTH);
 
         //Slider visuals
@@ -117,40 +135,20 @@ public class Start{
         setupSliderTextVisuals(gravityText);
         setupSliderTextVisuals(dampeningText);
 
-        //Buttons
-        toggleShowJunctions.setFont(new Font("ClearSans", Font.BOLD, 20));
-        toggleShowJunctions.setBackground(Color.BLACK);
-        toggleShowJunctions.setForeground(Color.WHITE);
-        toggleShowJunctions.setOpaque(true);
-        toggleShowJunctions.setFocusable(false);
+        //Button visuals
+        setupButtonVisuals(toggleShowJunctions);
+        setupButtonVisuals(toggleShowConnectors);
+        setupButtonVisuals(toggleShowStress);
+        setupButtonVisuals(selectJunctionColor);
+        setupButtonVisuals(selectConnectorColor);
 
-        toggleShowConnectors.setFont(new Font("ClearSans", Font.BOLD, 20));
-        toggleShowConnectors.setBackground(Color.BLACK);
-        toggleShowConnectors.setForeground(Color.WHITE);
-        toggleShowConnectors.setOpaque(true);
-        toggleShowConnectors.setFocusable(false);
-
-        toggleShowStress.setFont(new Font("ClearSans", Font.BOLD, 20));
-        toggleShowStress.setBackground(Color.BLACK);
-        toggleShowStress.setForeground(Color.WHITE);
-        toggleShowStress.setOpaque(true);
-        toggleShowStress.setFocusable(false);
-
-        selectJunctionColor.setFont(new Font("ClearSans", Font.BOLD, 20));
-        selectJunctionColor.setBackground(Color.BLACK);
-        selectJunctionColor.setForeground(Color.WHITE);
-        selectJunctionColor.setOpaque(true);
-        selectJunctionColor.setFocusable(false);
-
-        selectConnectorColor.setFont(new Font("ClearSans", Font.BOLD, 20));
-        selectConnectorColor.setBackground(Color.BLACK);
-        selectConnectorColor.setForeground(Color.WHITE);
-        selectConnectorColor.setOpaque(true);
-        selectConnectorColor.setFocusable(false);
-
+        //Sets the background of the options JPanel to black
         options.setBackground(Color.BLACK);
 
+        //Sets the layout of the options' menu.
         options.setLayout(new GridLayout(6,2));
+
+        //Adds all the options to the options JPanel.
         options.add(windText);
         options.add(windSlider);
         options.add(gravityText);
@@ -163,8 +161,13 @@ public class Start{
         options.add(selectJunctionColor);
         options.add(selectConnectorColor);
 
+        //Pack the frame.
         frame.pack();
+
+        //Set the frame to visible.
         frame.setVisible(true);
+
+        //Return the instance of the current ClothSimulation.
         return clothSimulation;
     }
 
@@ -205,6 +208,18 @@ public class Start{
         label.setBackground(Color.BLACK);
         label.setForeground(Color.WHITE);
         label.setOpaque(true);
+    }
+
+    /**
+     *
+     * @param button
+     */
+    public void setupButtonVisuals(JButton button){
+        button.setFont(new Font("ClearSans", Font.BOLD, 20));
+        button.setBackground(Color.BLACK);
+        button.setForeground(Color.WHITE);
+        button.setOpaque(true);
+        button.setFocusable(false);
     }
 
 }
