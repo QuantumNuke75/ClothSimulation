@@ -23,10 +23,10 @@ public class Cloth {
 	double dT;
 
 	//Other
-	private double maxLength = 75;
+	private double maxStress = 225;
 
-	Junction[][] junctions;
 	ArrayList<Connector> connectors = new ArrayList<Connector>();
+	ArrayList<Junction> junctionsArrayList = new ArrayList<Junction>();
 
     /**
      *
@@ -37,7 +37,6 @@ public class Cloth {
 		this.junctionCountX = junctionCountX;
 		this.junctionCountY = junctionCountY;
 		startJunctionX = 500 - (junctionCountX * junctionDistance) / 2;
-		junctions = new Junction[junctionCountX][junctionCountY];
 		createJunctions();
 		createConnectors();
 	}
@@ -48,15 +47,13 @@ public class Cloth {
      */
 	public void updateCloth(double dT) {
 		for (Connector connector : this.connectors) {
-				connector.update();
+			connector.update();
 		}
 
 		this.dT = dT;
-		for (int i = 0; i < junctionCountX; i++) {
-			for (int j = 0; j < junctionCountY; j++) {
-				if (this.junctions[i][j] != null && this.junctions[i][j].isMovable()) {
-					this.junctions[i][j].updatePosition(dT);
-				}
+		for(Junction junction : junctionsArrayList){
+			if(junction.isMovable()) {
+				junction.updatePosition(dT);
 			}
 		}
 		removeBrokenConnectors();
@@ -66,34 +63,43 @@ public class Cloth {
      *
      */
 	public void createJunctions() {
-		for (int i = 0; i < junctionCountX; i++) {
-			for (int j = 0; j < junctionCountY; j++) {
-				this.junctions[i][j] = new Junction(this, startJunctionX + (junctionDistance * j), startJunctionY + (junctionDistance * i), j, i, (i == 0 && (j == 0 || j == junctionCountY - 1 || j == junctionCountY / 2)) || (i == junctionCountX - 1 && (j == 0 || j == junctionCountY - 1)) ? false : true);
-			}
+
+		for(int i = 0; i < junctionCountX * junctionCountY; i++){
+			int row = getRowFromNumber(i);
+			int col = getColFromNumber(i);
+			this.junctionsArrayList.add(new Junction(this, startJunctionX + (junctionDistance * row), startJunctionY + (junctionDistance * col),
+					(col == 0 && (row == 0 || row == junctionCountY - 1 || row == junctionCountY / 2)) || (col == junctionCountX - 1 && (row == 0 || row == junctionCountY - 1)) ? false : true));
 		}
+	}
+
+	public int getRowFromNumber(int num){
+		return (int)Math.floor(num/junctionCountX);
+	}
+
+	public int getColFromNumber(int num){
+		return num%junctionCountY;
 	}
 
     /**
      *
      */
 	public void createConnectors() {
-		for (int i = 0; i < junctionCountX; i++) {
-			for (int j = 0; j < junctionCountY; j++) {
 
-				Junction currentJunction = junctions[i][j];
+		for(int i = 0; i < junctionCountX * junctionCountY; i++){
 
-				if (j != junctionCountY - 1) {
-					Connector connector = new Connector(this, currentJunction, junctions[i][j + 1]);
-					connectors.add(connector);
-					currentJunction.getRelatedConnectors().add(connector);
-					junctions[i][j + 1].getRelatedConnectors().add(connector);
-				}
-				if (i != junctionCountX - 1) {
-					Connector connector = new Connector(this, currentJunction, junctions[i + 1][j]);
-					connectors.add(connector);
-					currentJunction.getRelatedConnectors().add(connector);
-					junctions[i + 1][j].getRelatedConnectors().add(connector);
-				}
+			Junction currentJunction = (Junction) junctionsArrayList.toArray()[i];
+
+			if (getRowFromNumber(i) != junctionCountY - 1) {
+				Connector connector = new Connector(this, currentJunction, (Junction) junctionsArrayList.toArray()[i+junctionCountY]);
+				connectors.add(connector);
+				currentJunction.getRelatedConnectors().add(connector);
+				((Junction) junctionsArrayList.toArray()[i+junctionCountY]).getRelatedConnectors().add(connector);
+			}
+			if (getColFromNumber(i) != junctionCountX - 1) {
+				Connector connector = new Connector(this, currentJunction, (Junction) junctionsArrayList.toArray()[i+1]);
+				connectors.add(connector);
+				currentJunction.getRelatedConnectors().add(connector);
+				((Junction) junctionsArrayList.toArray()[i+1]).getRelatedConnectors().add(connector);
 			}
 		}
 	}
@@ -102,15 +108,24 @@ public class Cloth {
      *
      */
 	public void removeBrokenConnectors(){
-		for(Object o : this.connectors.toArray()) {
-			Connector connector = (Connector)o;
-			if (connector.getLength() > maxLength) {
 
-				connectors.remove(connector);
-
-				Junction newJunction = new Junction(this, connector.endJunction.getCurrentX(), connector.endJunction.getCurrentY(), connector.endJunction.getArrayPosX(), connector.endJunction.getArrayPosY(), true);
-				this.junctions[connector.endJunction.getArrayPosX()][connector.endJunction.getArrayPosY()] = newJunction;
-				connector.endJunction = newJunction;
+		for(Object o : this.junctionsArrayList.toArray()) {
+			Junction junction = (Junction) o;
+			if (junction.totalStress > maxStress) {
+				for(Connector relatedConnector : junction.getRelatedConnectors()){
+					//Create a replacement Junction for every related Connector.
+					Junction replacementJunction = new Junction(this, junction.getCurrentX(), junction.getCurrentY(), true);
+					if(relatedConnector.getEndJunction().equals(junction)){
+						relatedConnector.setEndJunction(replacementJunction);
+						junctionsArrayList.add(replacementJunction);
+					}
+					else{
+						relatedConnector.setStartJunction(replacementJunction);
+						junctionsArrayList.add(replacementJunction);
+					}
+				}
+				//Remove stressed Junction from existence
+				junctionsArrayList.remove(junction);
 			}
 		}
 	}
@@ -185,14 +200,6 @@ public class Cloth {
 
 	public void setdT(double dT) {
 		this.dT = dT;
-	}
-
-	public Junction[][] getJunctions() {
-		return junctions;
-	}
-
-	public void setJunctions(Junction[][] junctions) {
-		this.junctions = junctions;
 	}
 
 	public ArrayList<Connector> getConnectors() {

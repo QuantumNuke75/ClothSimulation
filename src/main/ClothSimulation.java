@@ -114,13 +114,9 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
 
 		//Drawing every Junction.
 		if(drawJunction) {
-			for (Junction[] junction1 : cloth.junctions) {
-				for (Junction junction2 : junction1) {
-					if (junction2 != null) {
-						g.setColor(junctionColor);
-						g.fillOval((int) (junction2.getCurrentX() - 2), (int) (junction2.getCurrentY() - 2), 4, 4);
-					}
-				}
+			for(Junction junction : cloth.junctionsArrayList){
+				g.setColor(junctionColor);
+				g.fillOval((int) (junction.getCurrentX() - 2), (int) (junction.getCurrentY() - 2), 4, 4);
 			}
 		}
 
@@ -144,13 +140,11 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
 		int y = e.getY();
 		Rectangle selectionBox = new Rectangle(x - 5, y - 5, 10, 10);
 
-		for (int i = 0; i < junctionCountX; i++) {
-			for (int j = 0; j < junctionCountY; j++) {
-				if (cloth.junctions[i][j] != null && selectionBox.contains(cloth.junctions[i][j].getCurrentX(), cloth.junctions[i][j].getPreviousY())) {
-					junctionBeingDragged = cloth.junctions[i][j];
-					this.repaint();
-					break;
-				}
+		for(Junction junction : cloth.junctionsArrayList){
+			if(selectionBox.contains(junction.getCurrentX(), junction.getCurrentY())){
+				junctionBeingDragged = junction;
+				this.repaint();
+				break;
 			}
 		}
 	}
