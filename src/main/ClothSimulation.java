@@ -90,24 +90,14 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
 						int red = (int) (255 * (1 - connector.getLength() / 75));
 						int green = (int) (255 * (1 - connector.getLength() / 75));
 
-						if (red > 255) {
-							red = 255;
-						} else if (red < 0) {
-							red = 0;
-						}
-
-						if (green > 255) {
-							green = 255;
-						} else if (green < 0) {
-							green = 0;
-						}
+						red = validateColorBounds(red);
+						green = validateColorBounds(green);
 
 						g.setColor(new Color(255 - red, green, 0));
 					}
 					else{
 						g.setColor(connectorColor);
 					}
-
 					g.drawLine((int) connector.getStartJunction().getCurrentX(), (int) connector.getStartJunction().getCurrentY(), (int) connector.getEndJunction().getCurrentX(), (int) connector.getEndJunction().getCurrentY());
 			}
 		}
@@ -128,6 +118,16 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
 				junctionBeingDragged.setCurrentY(MouseInfo.getPointerInfo().getLocation().y - this.getLocationOnScreen().y);
 			}
 		}
+	}
+
+	/**
+	 *
+	 * @param color
+	 * @return
+	 */
+	public int validateColorBounds(int color){
+		color = color>255?255:color<0?0:color;
+		return color;
 	}
 
 	/**

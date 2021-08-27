@@ -42,7 +42,7 @@ public class Start{
      */
     public static void main(String[] args) {
         Start.INSTANCE = new Start();
-        ClothSimulation simulation = Start.INSTANCE.createWindow(2000, 2000);
+        ClothSimulation simulation = Start.INSTANCE.createWindow(1000, 1000);
         simulation.run();
     }
 
@@ -104,82 +104,18 @@ public class Start{
             clothSimulation.setConnectorColor(JColorChooser.showDialog(clothSimulation, "Connector Color Picker", null));
         });
 
-        //Slider visuals
-        windSlider.setMajorTickSpacing(1);
-        windSlider.setPaintTicks(true);
-        windSlider.setPaintLabels(true);
-        windSlider.setToolTipText("Wind");
-        windSlider.setBackground(Color.BLACK);
-        windSlider.setForeground(Color.WHITE);
-        Dictionary dictionary = windSlider.getLabelTable();
-        if (dictionary != null) {
-            Enumeration keys = dictionary.keys();
-            while (keys.hasMoreElements()) {
-                JLabel label = (JLabel) dictionary.get(keys.nextElement());
-                label.setForeground(Color.WHITE);
-                label.setOpaque(true);
-                label.setBackground(Color.BLACK);
-                label.setFont(new Font("ClearSans", Font.BOLD, 12));
-            }
-        }
-
-
-        gravitySlider.setMajorTickSpacing(1);
-        gravitySlider.setPaintTicks(true);
-        gravitySlider.setPaintLabels(true);
-        gravitySlider.setValue((int)(clothSimulation.cloth.getGravityStrength()*10));
-        gravitySlider.setToolTipText("Gravity");
-        gravitySlider.setBackground(Color.BLACK);
-        gravitySlider.setForeground(Color.WHITE);
-        Dictionary dictionary1 = gravitySlider.getLabelTable();
-        if (dictionary1 != null) {
-            Enumeration keys = dictionary1.keys();
-            while (keys.hasMoreElements()) {
-                JLabel label = (JLabel) dictionary1.get(keys.nextElement());
-                label.setForeground(Color.WHITE);
-                label.setOpaque(true);
-                label.setBackground(Color.BLACK);
-                label.setFont(new Font("ClearSans", Font.BOLD, 12));
-            }
-        }
-
-        dampeningSlider.setMajorTickSpacing(10);
-        dampeningSlider.setPaintTicks(true);
-        dampeningSlider.setPaintLabels(true);
-        dampeningSlider.setValue((int)(clothSimulation.cloth.getDampeningCoeff()*100));
-        dampeningSlider.setToolTipText("Gravity");
-        dampeningSlider.setBackground(Color.BLACK);
-        dampeningSlider.setForeground(Color.WHITE);
-        Dictionary dictionary2 = dampeningSlider.getLabelTable();
-        if (dictionary2 != null) {
-            Enumeration keys = dictionary2.keys();
-            while (keys.hasMoreElements()) {
-                JLabel label = (JLabel) dictionary2.get(keys.nextElement());
-                label.setForeground(Color.WHITE);
-                label.setOpaque(true);
-                label.setBackground(Color.BLACK);
-                label.setFont(new Font("ClearSans", Font.BOLD, 12));
-            }
-        }
-
         frame.add(clothSimulation, BorderLayout.CENTER);
         frame.add(options, BorderLayout.SOUTH);
 
-        //Sliders
-        windText.setFont(new Font("ClearSans", Font.BOLD, 20));
-        windText.setBackground(Color.BLACK);
-        windText.setForeground(Color.WHITE);
-        windText.setOpaque(true);
+        //Slider visuals
+        setupSliderVisuals(windSlider, "Wind", 1, 0);
+        setupSliderVisuals(gravitySlider, "Gravity", 1, (int)(clothSimulation.cloth.getGravityStrength()*10));
+        setupSliderVisuals(dampeningSlider, "Dampening", 10, (int)(clothSimulation.cloth.getDampeningCoeff()*100));
 
-        gravityText.setFont(new Font("ClearSans", Font.BOLD, 20));
-        gravityText.setBackground(Color.BLACK);
-        gravityText.setForeground(Color.WHITE);
-        gravityText.setOpaque(true);
-
-        dampeningText.setFont(new Font("ClearSans", Font.BOLD, 20));
-        dampeningText.setBackground(Color.BLACK);
-        dampeningText.setForeground(Color.WHITE);
-        dampeningText.setOpaque(true);
+        //Slider Text
+        setupSliderTextVisuals(windText);
+        setupSliderTextVisuals(gravityText);
+        setupSliderTextVisuals(dampeningText);
 
         //Buttons
         toggleShowJunctions.setFont(new Font("ClearSans", Font.BOLD, 20));
@@ -231,4 +167,44 @@ public class Start{
         frame.setVisible(true);
         return clothSimulation;
     }
+
+    /**
+     *
+     * @param slider
+     * @param name
+     * @param tickSpacing
+     * @param initialValue
+     */
+    public void setupSliderVisuals(JSlider slider, String name, int tickSpacing, int initialValue){
+        slider.setMajorTickSpacing(tickSpacing);
+        slider.setPaintTicks(true);
+        slider.setPaintLabels(true);
+        slider.setValue(initialValue);
+        slider.setToolTipText(name);
+        slider.setBackground(Color.BLACK);
+        slider.setForeground(Color.WHITE);
+        Dictionary dictionary2 = slider.getLabelTable();
+        if (dictionary2 != null) {
+            Enumeration keys = dictionary2.keys();
+            while (keys.hasMoreElements()) {
+                JLabel label = (JLabel) dictionary2.get(keys.nextElement());
+                label.setForeground(Color.WHITE);
+                label.setOpaque(true);
+                label.setBackground(Color.BLACK);
+                label.setFont(new Font("ClearSans", Font.BOLD, 12));
+            }
+        }
+    }
+
+    /**
+     *
+     * @param label
+     */
+    public void setupSliderTextVisuals(JLabel label){
+        label.setFont(new Font("ClearSans", Font.BOLD, 20));
+        label.setBackground(Color.BLACK);
+        label.setForeground(Color.WHITE);
+        label.setOpaque(true);
+    }
+
 }

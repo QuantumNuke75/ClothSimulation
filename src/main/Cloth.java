@@ -12,7 +12,7 @@ public class Cloth {
 
     //The starting coordinate of each axis of Junction.
 	private int startJunctionX;
-	private int startJunctionY = 100;
+	private int startJunctionY = 50;
 
     //Acceleration altering variables.
 	private float windStrengthX = 0.0f;
@@ -23,7 +23,7 @@ public class Cloth {
 	double dT;
 
 	//Other
-	private double maxStress = 225;
+	private double maxStress = 175;
 
 	ArrayList<Connector> connectors = new ArrayList<Connector>();
 	ArrayList<Junction> junctionsArrayList = new ArrayList<Junction>();
@@ -105,7 +105,7 @@ public class Cloth {
 	}
 
     /**
-     *
+     * Method to break all Junctions where the stress value is too high.
      */
 	public void removeBrokenConnectors(){
 

@@ -48,6 +48,7 @@ public class Junction {
 	 */
 	public void updatePosition(double dT) {
 		if (this.isMovable) {
+			//Calculates new position.
 			double tempX = this.currentX + cloth.getDampeningCoeff() * ((this.currentX - this.previousX) + 0.5 * this.ax * dT * dT);
 			double tempY = this.currentY + cloth.getDampeningCoeff() * ((this.currentY - this.previousY) + 0.5 * cloth.getGravityStrength() * dT * dT);
 
@@ -55,21 +56,22 @@ public class Junction {
 			this.previousX = this.currentX;
 			this.previousY = this.currentY;
 
+			//Setting current position to calculated position.
 			this.currentX = tempX;
 			this.currentY = tempY;
 
 
 			//Check for out of bounds on the y-axis.
-			if (this.currentY > 1000) {
-				this.currentY = 1000;
+			if (this.currentY > Start.INSTANCE.clothSimulation.getHeight()) {
+				this.currentY = Start.INSTANCE.clothSimulation.getHeight();
 			}			
 			else if (this.currentY < 0) {
 				this.currentY = 0;
 			}
 
 			//Check for out of bounds on the x-axis.
-			if (this.currentX > 1000) {
-				this.currentX = 1000;
+			if (this.currentX > Start.INSTANCE.clothSimulation.getWidth()) {
+				this.currentX = Start.INSTANCE.clothSimulation.getWidth();
 			}			
 			else if (this.currentX < 0) {
 				this.currentX = 0;
