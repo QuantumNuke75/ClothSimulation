@@ -23,7 +23,7 @@ public class Cloth {
 	double dT;
 
 	//Other
-	private double maxLength = 200;
+	private double maxLength = 75;
 
 	Junction[][] junctions;
 	ArrayList<Connector> connectors = new ArrayList<Connector>();
@@ -85,10 +85,14 @@ public class Cloth {
 				if (j != junctionCountY - 1) {
 					Connector connector = new Connector(this, currentJunction, junctions[i][j + 1]);
 					connectors.add(connector);
+					currentJunction.getRelatedConnectors().add(connector);
+					junctions[i][j + 1].getRelatedConnectors().add(connector);
 				}
 				if (i != junctionCountX - 1) {
 					Connector connector = new Connector(this, currentJunction, junctions[i + 1][j]);
 					connectors.add(connector);
+					currentJunction.getRelatedConnectors().add(connector);
+					junctions[i + 1][j].getRelatedConnectors().add(connector);
 				}
 			}
 		}

@@ -36,17 +36,18 @@ public class Connector {
 	 *
 	 */
 	public void update() {
+
 		double differenceX = startJunction.getCurrentX() - endJunction.getCurrentX();
 		double differenceY = startJunction.getCurrentY() - endJunction.getCurrentY();
 
 		this.getLength();
-		double diffS = (normalLength - this.length) / this.length;
+		double difference = (normalLength - this.length) / this.length;
 
 		// changes material properties
 		// 0.05   0.5 normal
 		// 1 1 glitch
-		double translationX = differenceX * 0.5 * diffS * 0.5;
-		double translationY = differenceY * 0.5 * diffS * 0.5;
+		double translationX = differenceX * 0.5 * difference * 0.5;
+		double translationY = differenceY * 0.5 * difference * 0.5;
 
 		if (startJunction.isMovable()) {
 			this.startJunction.setCurrentX(this.startJunction.getCurrentX() + translationX);
@@ -57,6 +58,14 @@ public class Connector {
 			this.endJunction.setCurrentX(this.endJunction.getCurrentX() - translationX);
 			this.endJunction.setCurrentY(this.endJunction.getCurrentY() - translationY);
 		}
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	public Junction getSingleJunction(){
+		return endJunction==null?startJunction:endJunction;
 	}
 
 	public Junction getStartJunction() {

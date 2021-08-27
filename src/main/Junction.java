@@ -1,5 +1,7 @@
 package main;
 
+import java.util.ArrayList;
+
 public class Junction {
 
 	//The instance of the cloth.
@@ -21,6 +23,8 @@ public class Junction {
 
 	//Whether the Junction is immovable or not
 	private boolean isMovable;
+
+	private ArrayList<Connector> relatedConnectors = new ArrayList<>();
 
 	/**
 	 *
@@ -156,5 +160,13 @@ public class Junction {
 
 	public void setArrayPosY(int arrayPosY) {
 		this.arrayPosY = arrayPosY;
+	}
+
+	public ArrayList<Connector> getRelatedConnectors() {
+		return relatedConnectors;
+	}
+
+	public void setRelatedConnectors(ArrayList<Connector> relatedConnectors) {
+		this.relatedConnectors = relatedConnectors;
 	}
 }
