@@ -11,6 +11,10 @@ public class Junction {
 	private double previousX;
 	private double previousY;
 
+	//Array positions
+	private int arrayPosX;
+	private int arrayPosY;
+
 	//Acceleration Related Variables
 	private double ax;
 	private double ay;
@@ -25,12 +29,14 @@ public class Junction {
 	 * @param posY
 	 * @param isMovable
 	 */
-	public Junction(Cloth cloth, int posX, int posY, boolean isMovable) {
+	public Junction(Cloth cloth, double posX, double posY, int arrayPosX, int arrayPosY, boolean isMovable) {
 		this.cloth = cloth;
 		this.currentX = posX;
 		this.previousX = posX;
 		this.currentY = posY;
 		this.previousY = posY;
+		this.arrayPosX = arrayPosX;
+		this.arrayPosY = arrayPosY;
 		this.ax = 0;
 		this.ay = this.cloth.getGravityStrength();
 		this.isMovable = isMovable;
@@ -134,5 +140,21 @@ public class Junction {
 
 	public void setMovable(boolean movable) {
 		isMovable = movable;
+	}
+
+	public int getArrayPosX() {
+		return arrayPosX;
+	}
+
+	public void setArrayPosX(int arrayPosX) {
+		this.arrayPosX = arrayPosX;
+	}
+
+	public int getArrayPosY() {
+		return arrayPosY;
+	}
+
+	public void setArrayPosY(int arrayPosY) {
+		this.arrayPosY = arrayPosY;
 	}
 }

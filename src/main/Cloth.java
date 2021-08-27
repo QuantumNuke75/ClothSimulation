@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Cloth {
     //The distance between each Junction upon creation.
-	private int junctionDistance = 10;
+	private int junctionDistance = 15;
 
     //The number of Junction on each axis.
 	private int junctionCountX;
@@ -21,6 +21,9 @@ public class Cloth {
 
 	//Delta Time
 	double dT;
+
+	//Other
+	private double maxLength = 200;
 
 	Junction[][] junctions;
 	ArrayList<Connector> connectors = new ArrayList<Connector>();
@@ -65,7 +68,7 @@ public class Cloth {
 	public void createJunctions() {
 		for (int i = 0; i < junctionCountX; i++) {
 			for (int j = 0; j < junctionCountY; j++) {
-				this.junctions[i][j] = new Junction(this, startJunctionX + (junctionDistance * j), startJunctionY + (junctionDistance * i), (i == 0 && (j == 0 || j == junctionCountY - 1 || j == junctionCountY / 2)) || (i == junctionCountX - 1 && (j == 0 || j == junctionCountY - 1)) ? false : true);
+				this.junctions[i][j] = new Junction(this, startJunctionX + (junctionDistance * j), startJunctionY + (junctionDistance * i), j, i, (i == 0 && (j == 0 || j == junctionCountY - 1 || j == junctionCountY / 2)) || (i == junctionCountX - 1 && (j == 0 || j == junctionCountY - 1)) ? false : true);
 			}
 		}
 	}
@@ -79,15 +82,13 @@ public class Cloth {
 
 				Junction currentJunction = junctions[i][j];
 
-
 				if (j != junctionCountY - 1) {
-					Connector con = new Connector(this, currentJunction, junctions[i][j + 1]);
-					connectors.add(con);
+					Connector connector = new Connector(this, currentJunction, junctions[i][j + 1]);
+					connectors.add(connector);
 				}
-
 				if (i != junctionCountX - 1) {
-					Connector con = new Connector(this, currentJunction, junctions[i + 1][j]);
-					connectors.add(con);
+					Connector connector = new Connector(this, currentJunction, junctions[i + 1][j]);
+					connectors.add(connector);
 				}
 			}
 		}
@@ -98,12 +99,14 @@ public class Cloth {
      */
 	public void removeBrokenConnectors(){
 		for(Object o : this.connectors.toArray()) {
-
 			Connector connector = (Connector)o;
+			if (connector.getLength() > maxLength) {
 
-			if (connector.getLength() > 100) {
 				connectors.remove(connector);
 
+				Junction newJunction = new Junction(this, connector.endJunction.getCurrentX(), connector.endJunction.getCurrentY(), connector.endJunction.getArrayPosX(), connector.endJunction.getArrayPosY(), true);
+				this.junctions[connector.endJunction.getArrayPosX()][connector.endJunction.getArrayPosY()] = newJunction;
+				connector.endJunction = newJunction;
 			}
 		}
 	}

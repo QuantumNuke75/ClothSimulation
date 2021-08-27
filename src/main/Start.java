@@ -1,12 +1,13 @@
 package main;
 
 import javax.swing.*;
+import javax.swing.colorchooser.AbstractColorChooserPanel;
 import java.applet.Applet;
 import java.awt.*;
 import java.util.Dictionary;
 import java.util.Enumeration;
 
-public class Start extends Applet {
+public class Start{
 
     //Instance of this class.
     public static Start INSTANCE;
@@ -28,6 +29,13 @@ public class Start extends Applet {
     JLabel gravityText = new JLabel("Gravity", SwingConstants.CENTER);
     JLabel dampeningText = new JLabel("Dampening", SwingConstants.CENTER);
 
+    JButton toggleShowJunctions = new JButton("Show Junctions: Off");
+    JButton toggleShowConnectors = new JButton("Show Connectors: Off");
+    JButton toggleShowStress = new JButton("Show Stress: Off");
+
+    JButton selectJunctionColor = new JButton("Junction Color Picker");
+    JButton selectConnectorColor = new JButton("Connector Color Picker");
+
     /**
      *
      * @param args
@@ -45,7 +53,7 @@ public class Start extends Applet {
      * @return
      */
     public ClothSimulation createWindow(int width, int height){
-        frame = new JFrame("Cloth Simulationr");
+        frame = new JFrame("Cloth Simulation");
         JPanel options = new JPanel();
         frame.setLayout(new BorderLayout());
         frame.setSize(width, height);
@@ -55,22 +63,48 @@ public class Start extends Applet {
 
         //Change listener for Wind slider.
         windSlider.addChangeListener(e -> {
-            float windStrengthX = windSlider.getValue()/10f;
-            clothSimulation.cloth.setWindStrengthX(windStrengthX);
+            clothSimulation.cloth.setWindStrengthX(windSlider.getValue()/10f);
         });
 
         //Change listener for Gravity slider.
         gravitySlider.addChangeListener(e -> {
-            float gravityStrength = gravitySlider.getValue()/10f;
-            clothSimulation.cloth.setGravityStrength(gravityStrength);
+            clothSimulation.cloth.setGravityStrength(gravitySlider.getValue()/10f);
         });
 
         //Change listener for Dampening slider.
         dampeningSlider.addChangeListener(e -> {
-            float dampeningStrength = dampeningSlider.getValue()/100f;
-            clothSimulation.cloth.setDampeningCoeff(dampeningStrength);
+            clothSimulation.cloth.setDampeningCoeff(dampeningSlider.getValue()/100f);
         });
 
+        //Change listener for Junction show toggle
+        toggleShowJunctions.addActionListener(e ->{
+            clothSimulation.setDrawJunction(!clothSimulation.isDrawJunction());
+            toggleShowJunctions.setText(("Show Junctions: " + (clothSimulation.isDrawJunction()?"On":"Off")));
+        });
+
+        //Change listener for Connector show toggle
+        toggleShowConnectors.addActionListener(e ->{
+            clothSimulation.setDrawConnectors(!clothSimulation.isDrawConnectors());
+            toggleShowConnectors.setText(("Show Connectors: " + (clothSimulation.isDrawConnectors()?"On":"Off")));
+        });
+
+        //Change listener for Stress show toggle
+        toggleShowStress.addActionListener(e ->{
+            clothSimulation.setShowStress(!clothSimulation.isShowStress());
+            toggleShowStress.setText(("Show Stress: " + (clothSimulation.isShowStress()?"On":"Off")));
+        });
+
+        //Action listener for opening the color picker for Junctions.
+        selectJunctionColor.addActionListener(e ->{
+            clothSimulation.setJunctionColor(JColorChooser.showDialog(clothSimulation, "Junction Color Picker", null));
+        });
+
+        //Action listener for opening the color picker for Connectors.
+        selectConnectorColor.addActionListener(e ->{
+            clothSimulation.setConnectorColor(JColorChooser.showDialog(clothSimulation, "Connector Color Picker", null));
+        });
+
+        //Slider visuals
         windSlider.setMajorTickSpacing(1);
         windSlider.setPaintTicks(true);
         windSlider.setPaintLabels(true);
@@ -131,6 +165,7 @@ public class Start extends Applet {
         frame.add(clothSimulation, BorderLayout.CENTER);
         frame.add(options, BorderLayout.SOUTH);
 
+        //Sliders
         windText.setFont(new Font("ClearSans", Font.BOLD, 20));
         windText.setBackground(Color.BLACK);
         windText.setForeground(Color.WHITE);
@@ -146,13 +181,51 @@ public class Start extends Applet {
         dampeningText.setForeground(Color.WHITE);
         dampeningText.setOpaque(true);
 
-        options.setLayout(new GridLayout(6,1));
+        //Buttons
+        toggleShowJunctions.setFont(new Font("ClearSans", Font.BOLD, 20));
+        toggleShowJunctions.setBackground(Color.BLACK);
+        toggleShowJunctions.setForeground(Color.WHITE);
+        toggleShowJunctions.setOpaque(true);
+        toggleShowJunctions.setFocusable(false);
+
+        toggleShowConnectors.setFont(new Font("ClearSans", Font.BOLD, 20));
+        toggleShowConnectors.setBackground(Color.BLACK);
+        toggleShowConnectors.setForeground(Color.WHITE);
+        toggleShowConnectors.setOpaque(true);
+        toggleShowConnectors.setFocusable(false);
+
+        toggleShowStress.setFont(new Font("ClearSans", Font.BOLD, 20));
+        toggleShowStress.setBackground(Color.BLACK);
+        toggleShowStress.setForeground(Color.WHITE);
+        toggleShowStress.setOpaque(true);
+        toggleShowStress.setFocusable(false);
+
+        selectJunctionColor.setFont(new Font("ClearSans", Font.BOLD, 20));
+        selectJunctionColor.setBackground(Color.BLACK);
+        selectJunctionColor.setForeground(Color.WHITE);
+        selectJunctionColor.setOpaque(true);
+        selectJunctionColor.setFocusable(false);
+
+        selectConnectorColor.setFont(new Font("ClearSans", Font.BOLD, 20));
+        selectConnectorColor.setBackground(Color.BLACK);
+        selectConnectorColor.setForeground(Color.WHITE);
+        selectConnectorColor.setOpaque(true);
+        selectConnectorColor.setFocusable(false);
+
+        options.setBackground(Color.BLACK);
+
+        options.setLayout(new GridLayout(6,2));
         options.add(windText);
         options.add(windSlider);
         options.add(gravityText);
         options.add(gravitySlider);
         options.add(dampeningText);
         options.add(dampeningSlider);
+        options.add(toggleShowJunctions);
+        options.add(toggleShowConnectors);
+        options.add(toggleShowStress);
+        options.add(selectJunctionColor);
+        options.add(selectConnectorColor);
 
         frame.pack();
         frame.setVisible(true);
