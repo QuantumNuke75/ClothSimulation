@@ -87,8 +87,8 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
 
 					if(showStress) {
 
-						int red = (int) (255 * (1 - connector.getLength() / 50));
-						int green = (int) (255 * (1 - connector.getLength() / 50));
+						int red = (int) (255 * (1 - connector.getLength() / 75));
+						int green = (int) (255 * (1 - connector.getLength() / 75));
 
 						if (red > 255) {
 							red = 255;
