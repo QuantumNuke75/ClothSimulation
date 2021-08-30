@@ -140,7 +140,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
                 int[] drawCoordinatesEnd = convertSimulationCoordsToScreenSpaceCoords((int) connector.getEndJunction().getCurrentX(), (int) connector.getEndJunction().getCurrentY());
 
                 //Draw the Connector with the given coordinates.
-                g.drawLine(drawCoordinatesStart[0] + (this.getWidth()-thousandCoordinates[0])/2, drawCoordinatesStart[1], drawCoordinatesEnd[0] + (this.getWidth()-thousandCoordinates[0])/2, drawCoordinatesEnd[1]);
+                g.drawLine(drawCoordinatesStart[0] + (this.getWidth()-thousandCoordinates[0])/2, drawCoordinatesStart[1]+ (this.getHeight()-thousandCoordinates[1])/2, drawCoordinatesEnd[0] + (this.getWidth()-thousandCoordinates[0])/2, drawCoordinatesEnd[1]+ (this.getHeight()-thousandCoordinates[1])/2);
             }
         }
 
@@ -154,7 +154,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
                 int[] drawCoordinates = convertSimulationCoordsToScreenSpaceCoords((int) junction.getCurrentX() , (int) junction.getCurrentY());
 
                 //Draws the Junction with the given coordinates and width/height.
-                g.fillOval(drawCoordinates[0] - 2 + (this.getWidth()-thousandCoordinates[0])/2, drawCoordinates[1] - 2, 4, 4);
+                g.fillOval(drawCoordinates[0] - 2 + (this.getWidth()-thousandCoordinates[0])/2, drawCoordinates[1] - 2 + (this.getHeight()-thousandCoordinates[1])/2, 4, 4);
             }
         }
 
@@ -164,11 +164,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
             if (junctionBeingDragged != null) {
 
 				//Get the simulation coordinates from the Screen Space coordinates.
-                int[] drawCoordsInSimulationCoords = convertScreenSpaceCoordsToSimulationCoords(MouseInfo.getPointerInfo().getLocation().x - this.getLocationOnScreen().x, MouseInfo.getPointerInfo().getLocation().y - this.getLocationOnScreen().y);
-                int[] thousandCoords = convertSimulationCoordsToScreenSpaceCoords(1000,1000);
-                if(this.getWidth()  >= thousandCoordinates[0]) {
-                    System.out.println("Coords: " + drawCoordsInSimulationCoords[0]);
-
+                int[] drawCoordsInSimulationCoords = convertScreenSpaceCoordsToSimulationCoords(MouseInfo.getPointerInfo().getLocation().x - this.getLocationOnScreen().x - (this.getWidth() - thousandCoordinates[0])/2, MouseInfo.getPointerInfo().getLocation().y - this.getLocationOnScreen().y - (this.getHeight() - thousandCoordinates[1])/2);if(this.getWidth()  >= thousandCoordinates[0]) {
                     //Sets the current dragged Junction to the converted simulation coordinates.
                     junctionBeingDragged.setCurrentX(drawCoordsInSimulationCoords[0]);
                     junctionBeingDragged.setCurrentY(drawCoordsInSimulationCoords[1]);
@@ -192,49 +188,35 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
     }
 
     /**
+     * Method to convert the relative simulation coordinates to the coordinates used by the drawing system.
+     *
      * @param x
      * @param y
      * @return
      */
     public int[] convertSimulationCoordsToScreenSpaceCoords(int x, int y) {
-        double scaleX, scaleY;
         double preferredSize = 1000;
         int windowWidth = Start.INSTANCE.clothSimulation.getWidth();
         int windowHeight = Start.INSTANCE.clothSimulation.getHeight();
+        double scale = windowWidth>=windowHeight?windowHeight/preferredSize:windowWidth/preferredSize;
 
-        //scale based on Y
-        if(windowWidth >= windowHeight){
-            scaleY = windowHeight / preferredSize;
-            return new int[]{(int) (x * scaleY), (int) (y * scaleY)};
-        }
-        //scale based on x
-        else{
-            scaleX = windowWidth / preferredSize;
-            return new int[]{(int) (x * scaleX), (int) (y * scaleX)};
-        }
+        return new int[]{(int) (x * scale), (int) (y * scale)};
     }
 
     /**
+     * Method used to convert the relative drawing coordinates to the simulation coordinates.
+     *
      * @param x
      * @param y
      * @return
      */
     public int[] convertScreenSpaceCoordsToSimulationCoords(int x, int y) {
-        double scaleX, scaleY;
         double preferredSize = 1000;
         int windowWidth = Start.INSTANCE.clothSimulation.getWidth();
         int windowHeight = Start.INSTANCE.clothSimulation.getHeight();
+        double scale = windowWidth>=windowHeight?windowHeight/preferredSize:windowWidth/preferredSize;
 
-        //scale based on Y
-        if(windowWidth >= windowHeight){
-            scaleY = windowHeight / preferredSize;
-            return new int[]{(int) (x / scaleY), (int) (y * scaleY)};
-        }
-        //scale based on x
-        else{
-            scaleX = windowWidth / preferredSize;
-            return new int[]{(int) (x / scaleX), (int) (y / scaleX)};
-        }
+        return new int[]{(int) (x / scale), (int) (y / scale)};
     }
 
     /**
@@ -245,11 +227,20 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         int x = e.getX();
         int y = e.getY();
 
+//        int[] ssClick = new int[]{x, y};
+//        //When converting to sim coords, must subtract relative xoffset
+//        int[] ssClicktoSim = convertScreenSpaceCoordsToSimulationCoords(ssClick[0] - (this.getWidth()-thousandCoords[0])/2,ssClick[1]- (this.getHeight()-thousandCoords[1])/2);
+//        int[] simtoSS = convertSimulationCoordsToScreenSpaceCoords(ssClicktoSim[0], ssClicktoSim[1]);
+//        System.out.println("SS Click: " + ssClick[0] + ", " + ssClick[1]);
+//        System.out.println("SS Click to Sim: " + ssClicktoSim[0] + ", " + ssClicktoSim[1]);
+//        //When converting to ss coords, must add relative xoffset
+//        System.out.println("Sim to SS: " + simtoSS[0] + (this.getWidth() - thousandCoords[0])/2 + ", " + simtoSS[1] + (this.getHeight() - thousandCoords[1])/2);
+
         Rectangle selectionBoxSimulation = new Rectangle(x - 5, y - 5, 10, 10);
         for (Junction junction : cloth.junctionsArrayList) {
             int[] simulationCoords = convertSimulationCoordsToScreenSpaceCoords((int)junction.getCurrentX(), (int)junction.getCurrentY());
             int[] thousandCoords = convertSimulationCoordsToScreenSpaceCoords(1000,1000);
-            if (selectionBoxSimulation.contains(simulationCoords[0] + (this.getWidth()-thousandCoords[0])/2, simulationCoords[1] + (this.getHeight()-thousandCoords[1])/2)) {
+            if (selectionBoxSimulation.contains(simulationCoords[0] + (this.getWidth() - thousandCoords[0])/2, simulationCoords[1] + (this.getHeight() - thousandCoords[1])/2)){
                 junctionBeingDragged = junction;
                 this.repaint();
                 break;
