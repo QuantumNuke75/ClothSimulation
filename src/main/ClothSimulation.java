@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
+
 public class ClothSimulation extends JPanel implements MouseListener, MouseMotionListener {
 
     //Instance of the Cloth.
@@ -99,12 +100,15 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         g.fillRect(0, 0, super.getWidth(), super.getHeight());
 
         //Draw the border.
+
+        int[] thousandCoordinates = convertSimulationCoordsToScreenSpaceCoords(1000, 1000);
+
 		g.setStroke(new BasicStroke(5));
 		g.setColor(Color.WHITE);
-		g.drawLine(0,0,this.getWidth(),0);
-		g.drawLine(this.getWidth(),0,this.getWidth(),this.getHeight());
-		g.drawLine(this.getWidth(), this.getHeight(), 0, this.getHeight());
-		g.drawLine(0, this.getHeight(), 0, 0);
+		g.drawLine(0 + (this.getWidth()-thousandCoordinates[0])/2,0,thousandCoordinates[0] + (this.getWidth()-thousandCoordinates[0])/2,0);
+		g.drawLine(thousandCoordinates[0] + (this.getWidth()-thousandCoordinates[0])/2,0,thousandCoordinates[0] + (this.getWidth()-thousandCoordinates[0])/2, thousandCoordinates[1]);
+		g.drawLine(thousandCoordinates[0] + (this.getWidth()-thousandCoordinates[0])/2, thousandCoordinates[1], 0 + (this.getWidth()-thousandCoordinates[0])/2, thousandCoordinates[1]);
+		g.drawLine(0 + (this.getWidth()-thousandCoordinates[0])/2, thousandCoordinates[1], (this.getWidth()-thousandCoordinates[0])/2, 0);
 
         //If the option drawConnectors in enabled.
         if (drawConnectors) {
@@ -136,7 +140,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
                 int[] drawCoordinatesEnd = convertSimulationCoordsToScreenSpaceCoords((int) connector.getEndJunction().getCurrentX(), (int) connector.getEndJunction().getCurrentY());
 
                 //Draw the Connector with the given coordinates.
-                g.drawLine(drawCoordinatesStart[0], drawCoordinatesStart[1], drawCoordinatesEnd[0], drawCoordinatesEnd[1]);
+                g.drawLine(drawCoordinatesStart[0] + (this.getWidth()-thousandCoordinates[0])/2, drawCoordinatesStart[1], drawCoordinatesEnd[0] + (this.getWidth()-thousandCoordinates[0])/2, drawCoordinatesEnd[1]);
             }
         }
 
@@ -147,10 +151,10 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
                 g.setColor(junctionColor);
 
                 //Gets the Screen Space coordinates of the Junction.
-                int[] drawCoordinates = convertSimulationCoordsToScreenSpaceCoords((int) junction.getCurrentX(), (int) junction.getCurrentY());
+                int[] drawCoordinates = convertSimulationCoordsToScreenSpaceCoords((int) junction.getCurrentX() , (int) junction.getCurrentY());
 
                 //Draws the Junction with the given coordinates and width/height.
-                g.fillOval(drawCoordinates[0] - 2, drawCoordinates[1] - 2, 4, 4);
+                g.fillOval(drawCoordinates[0] - 2 + (this.getWidth()-thousandCoordinates[0])/2, drawCoordinates[1] - 2, 4, 4);
             }
         }
 
@@ -161,10 +165,19 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
 
 				//Get the simulation coordinates from the Screen Space coordinates.
                 int[] drawCoordsInSimulationCoords = convertScreenSpaceCoordsToSimulationCoords(MouseInfo.getPointerInfo().getLocation().x - this.getLocationOnScreen().x, MouseInfo.getPointerInfo().getLocation().y - this.getLocationOnScreen().y);
+                int[] thousandCoords = convertSimulationCoordsToScreenSpaceCoords(1000,1000);
+                if(this.getWidth()  >= thousandCoordinates[0]) {
+                    System.out.println("Coords: " + drawCoordsInSimulationCoords[0]);
 
-                //Sets the current dragged Junction to the converted simulation coordinates.
-                junctionBeingDragged.setCurrentX(drawCoordsInSimulationCoords[0]);
-                junctionBeingDragged.setCurrentY(drawCoordsInSimulationCoords[1]);
+                    //Sets the current dragged Junction to the converted simulation coordinates.
+                    junctionBeingDragged.setCurrentX(drawCoordsInSimulationCoords[0]);
+                    junctionBeingDragged.setCurrentY(drawCoordsInSimulationCoords[1]);
+                }
+                else{
+                    //Sets the current dragged Junction to the converted simulation coordinates.
+                    junctionBeingDragged.setCurrentX(drawCoordsInSimulationCoords[0]);
+                    junctionBeingDragged.setCurrentY(drawCoordsInSimulationCoords[1]);
+                }
             }
         }
     }
@@ -184,12 +197,21 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
      * @return
      */
     public int[] convertSimulationCoordsToScreenSpaceCoords(int x, int y) {
-        double scaleX;
-        double preferredWidth = 1000;
+        double scaleX, scaleY;
+        double preferredSize = 1000;
         int windowWidth = Start.INSTANCE.clothSimulation.getWidth();
-        scaleX = windowWidth / preferredWidth;
+        int windowHeight = Start.INSTANCE.clothSimulation.getHeight();
 
-        return new int[]{(int) (x * scaleX), (int) (y * scaleX)};
+        //scale based on Y
+        if(windowWidth >= windowHeight){
+            scaleY = windowHeight / preferredSize;
+            return new int[]{(int) (x * scaleY), (int) (y * scaleY)};
+        }
+        //scale based on x
+        else{
+            scaleX = windowWidth / preferredSize;
+            return new int[]{(int) (x * scaleX), (int) (y * scaleX)};
+        }
     }
 
     /**
@@ -198,14 +220,22 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
      * @return
      */
     public int[] convertScreenSpaceCoordsToSimulationCoords(int x, int y) {
-        double scaleX;
-        double preferredWidth = 1000;
+        double scaleX, scaleY;
+        double preferredSize = 1000;
         int windowWidth = Start.INSTANCE.clothSimulation.getWidth();
-        scaleX = windowWidth / preferredWidth;
+        int windowHeight = Start.INSTANCE.clothSimulation.getHeight();
 
-        return new int[]{(int) (x / scaleX), (int) (y / scaleX)};
+        //scale based on Y
+        if(windowWidth >= windowHeight){
+            scaleY = windowHeight / preferredSize;
+            return new int[]{(int) (x / scaleY), (int) (y * scaleY)};
+        }
+        //scale based on x
+        else{
+            scaleX = windowWidth / preferredSize;
+            return new int[]{(int) (x / scaleX), (int) (y / scaleX)};
+        }
     }
-
 
     /**
      * @param e
@@ -214,12 +244,12 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
     public void mousePressed(MouseEvent e) {
         int x = e.getX();
         int y = e.getY();
-        Rectangle selectionBox = new Rectangle(x - 5, y - 5, 10, 10);
 
+        Rectangle selectionBoxSimulation = new Rectangle(x - 5, y - 5, 10, 10);
         for (Junction junction : cloth.junctionsArrayList) {
-            //Gets the screen coordinates from thr coordinates of the Junction
-            int[] drawCoordinates = convertSimulationCoordsToScreenSpaceCoords((int) junction.getCurrentX(), (int) junction.getCurrentY());
-            if (selectionBox.contains(drawCoordinates[0], drawCoordinates[1])) {
+            int[] simulationCoords = convertSimulationCoordsToScreenSpaceCoords((int)junction.getCurrentX(), (int)junction.getCurrentY());
+            int[] thousandCoords = convertSimulationCoordsToScreenSpaceCoords(1000,1000);
+            if (selectionBoxSimulation.contains(simulationCoords[0] + (this.getWidth()-thousandCoords[0])/2, simulationCoords[1] + (this.getHeight()-thousandCoords[1])/2)) {
                 junctionBeingDragged = junction;
                 this.repaint();
                 break;

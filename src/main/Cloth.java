@@ -63,7 +63,6 @@ public class Cloth {
      *
      */
 	public void createJunctions() {
-
 		for(int i = 0; i < junctionCountX * junctionCountY; i++){
 			int row = getRowFromNumber(i);
 			int col = getColFromNumber(i);
@@ -107,6 +106,10 @@ public class Cloth {
     /**
      * Method to break all Junctions where the stress value is too high.
      */
+
+
+//if the stress junction has any connectors that have a junction not connected with any other connectors
+//assign that connector and keep it
 	public void removeBrokenConnectors(){
 
 		for(Object o : this.junctionsArrayList.toArray()) {
