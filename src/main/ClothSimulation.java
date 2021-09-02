@@ -50,39 +50,16 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
      * The simulation's loop.
      */
     public void run() {
-        //Instantiates the first instance of when the loop is run.
-        long lastLoopTime = System.nanoTime();
-
-        //The locked FPS of the simulation.
-        final int FPS = 60;
-
-        //The preferred time step.
-        final long preferredTime = 1000000000 / FPS;
-
-        //The loop for the simulation to run in.
         while (true) {
-            //Gets the current time.
-            long now = System.nanoTime();
-
-            //Get difference between the last loop run and this loop run.
-            long updateLength = now - lastLoopTime;
-
-            //Sets the last run loop time to now.
-            lastLoopTime = now;
-
-            //Sets the delta time based on the difference between the last loop time and now,
-            //divided by the preferred time step.
-            double dT = updateLength / ((double) preferredTime);
-
             //Updates the Cloth instance.
-            this.cloth.updateCloth(dT);
+            this.cloth.updateCloth(0.97);
 
             //Redraws everything needed to be drawn by the simulation.
             this.repaint();
 
             try {
                 //Delays the program's next loop
-                Thread.sleep((lastLoopTime - System.nanoTime() + preferredTime) / 1000000);
+                Thread.sleep(15);
             }
             catch (Exception e) {
 
@@ -126,8 +103,8 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
                 //If the option showStress is enabled.
                 if (this.showStress) {
                     //Red and green RBG values based on length of the Connector.
-                    int red = (int) (255 * (1 - connector.getLength() / 75));
-                    int green = (int) (255 * (1 - connector.getLength() / 75));
+                    int red = (int) (255 * (1 - connector.recalculateLength() / 75));
+                    int green = (int) (255 * (1 - connector.recalculateLength() / 75));
 
                     //Validate the bounds of the red and green RBG values.
                     red = validateColorBounds(red);
@@ -176,6 +153,12 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         }
     }
 
+
+    /**
+     *
+     *
+     * @param g - The given Graphics2D object.
+     */
     public void colorAreas(Graphics2D g){
         for(int i = 0; i < junctionCountX*junctionCountY; i++){
 
@@ -198,11 +181,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
 
                     double area = polygonArea(allX, allY, 4);
 
-                    if(i == 0) {
-                        System.out.println("a: " + area);
-                    }
-
-                    int color = (int) (255*(area/255));
+                    int color = (int) (255*(area/300));
 
                     color = validateColorBounds(color);
 
@@ -214,16 +193,12 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         }
     }
 
-    public static double polygonArea(int X[], int Y[], int n) {
-        // Initialize area
-        double area = 0.0;
+    public static double polygonArea(int x[], int y[], int namVertices) {
+        double area = 0;
 
-        // Calculate value of shoelace formula
-        int j = n - 1;
-        for (int i = 0; i < n; i++) {
-            area += (X[j] + X[i]) * (Y[j] - Y[i]);
-
-            // j is previous vertex to i
+        int j = namVertices - 1;
+        for (int i = 0; i < namVertices; i++) {
+            area += (x[j] + x[i]) * (y[j] - y[i]);
             j = i;
         }
         return Math.abs(area / 2.0);

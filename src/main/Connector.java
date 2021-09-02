@@ -25,10 +25,8 @@ public class Connector {
 
 	/**
 	 * Calculates the new length of the Connector based on the distance between the associated Junctions.
-	 *
-	 * @returns the length of the Connector.
 	 */
-	public Double getLength() {
+	public double recalculateLength() {
 		//Sets this length to the calculated length between the two Junctions.
 		this.length = Math.pow(Math.pow(endJunction.getCurrentX() - startJunction.getCurrentX(), 2) + Math.pow(endJunction.getCurrentY() - startJunction.getCurrentY(), 2), 0.5);
 		return this.length;
@@ -42,14 +40,11 @@ public class Connector {
 		double differenceX = this.startJunction.getCurrentX() - this.endJunction.getCurrentX();
 		double differenceY = this.startJunction.getCurrentY() - this.endJunction.getCurrentY();
 
-		this.getLength();
+		this.recalculateLength();
 		double difference = (this.normalLength - this.length) / this.length;
 
-		// Changes the material properties.
-		// 0.5   0.5 normal
-		// 1 1 glitch
-		double translationX = differenceX * 0.5 * difference * 0.5;
-		double translationY = differenceY * 0.5 * difference * 0.5;
+		double translationX = differenceX * difference * 0.5 * 0.5;
+		double translationY = differenceY * difference * 0.5 * 0.5;
 
 		if (this.startJunction.getJunctionState() == JunctionState.NORMAL) {
 			this.startJunction.setCurrentX(this.startJunction.getCurrentX() + translationX);

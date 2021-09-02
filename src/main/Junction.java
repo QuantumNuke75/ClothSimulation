@@ -50,7 +50,7 @@ public class Junction {
 	 *
 	 * @param dT - The delta time.
 	 */
-	public void updatePosition(double dT) {
+	public void update(double dT) {
 		if (this.junctionState == JunctionState.NORMAL) {
 			//Calculates new position.
 			double tempX = this.currentX + this.cloth.getDampeningCoeff() * ((this.currentX - this.previousX) + 0.5 * this.cloth.getWindStrengthX() * dT * dT);
@@ -157,5 +157,9 @@ public class Junction {
 
 	public void setRelatedConnectors(ArrayList<Connector> relatedConnectors) {
 		this.relatedConnectors = relatedConnectors;
+	}
+
+	public void addToRelatedConnectors(Connector connector){
+		this.relatedConnectors.add(connector);
 	}
 }

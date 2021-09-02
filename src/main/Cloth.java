@@ -23,7 +23,7 @@ public class Cloth {
 	private double dT;
 
 	//The maximum stress of a given Junction.
-	private double maxStress = 175;
+	private double maxStress = 1000;
 
 	//List of all Connectors.
 	ArrayList<Connector> connectors = new ArrayList<Connector>();
@@ -51,16 +51,17 @@ public class Cloth {
      * @param dT - The given delta time.
      */
 	public void updateCloth(double dT) {
+		this.dT = dT;
+
 		for (Connector connector : this.connectors) {
 			connector.update();
 		}
 
-		this.dT = dT;
 		for(Junction junction : this.junctionsArrayList){
 
-			//Only if the Junction is not anchored.
+			//Only if the JunctionState is normal.
 			if(junction.getJunctionState() == JunctionState.NORMAL) {
-				junction.updatePosition(dT);
+				junction.update(dT);
 			}
 		}
 		removeBrokenConnectors();

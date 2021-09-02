@@ -11,8 +11,8 @@ public class Start{
     public static Start INSTANCE;
 
     //Width and height of the Cloth.
-    int junctionCountX = 20;
-    int junctionCountY = 20;
+    int junctionCountX = 50;
+    int junctionCountY = 50;
 
     //The instance of the ClothSimulation.
     ClothSimulation clothSimulation;
