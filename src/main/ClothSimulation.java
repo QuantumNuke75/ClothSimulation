@@ -114,6 +114,8 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
 		g.drawLine(thousandCoordinates[0] + (this.getWidth()-thousandCoordinates[0])/2, thousandCoordinates[1], 0 + (this.getWidth()-thousandCoordinates[0])/2, thousandCoordinates[1]);
 		g.drawLine(0 + (this.getWidth()-thousandCoordinates[0])/2, thousandCoordinates[1], (this.getWidth()-thousandCoordinates[0])/2, 0);
 
+        colorAreas(g);
+
         //If the option drawConnectors in enabled.
         if (this.drawConnectors) {
             for (Connector connector : this.cloth.connectors) {
@@ -174,16 +176,86 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         }
     }
 
-    public void colorAreas(){
+    public void colorAreas(Graphics2D g){
         for(int i = 0; i < junctionCountX*junctionCountY; i++){
 
-            Junction junction = this.cloth.junctionsArrayList
+            if(getRowFromNumber(i) < junctionCountY - 1 && getColFromNumber(i) < junctionCountX - 1){
 
-            if(this.cloth){
+                Junction junction1 = this.cloth.junctionsArrayList.get(i);
+                Junction junction2 = this.cloth.junctionsArrayList.get(i+1);
+                Junction junction3 = this.cloth.junctionsArrayList.get(i+junctionCountY+1);
+                Junction junction4 = this.cloth.junctionsArrayList.get(i+junctionCountY);
 
+                if(junctionConnectedToJunction(junction1, junction2) && junctionConnectedToJunction(junction2, junction3) && junctionConnectedToJunction(junction3, junction4)  && junctionConnectedToJunction(junction4, junction1)){
+
+                    int[] junction1SS = convertSimulationCoordsToScreenSpaceCoords((int)junction1.getCurrentX(), (int)junction1.getCurrentY());
+                    int[] junction2SS = convertSimulationCoordsToScreenSpaceCoords((int)junction2.getCurrentX(), (int)junction2.getCurrentY());
+                    int[] junction3SS = convertSimulationCoordsToScreenSpaceCoords((int)junction3.getCurrentX(), (int)junction3.getCurrentY());
+                    int[] junction4SS = convertSimulationCoordsToScreenSpaceCoords((int)junction4.getCurrentX(), (int)junction4.getCurrentY());
+
+                    int[] allX = new int[]{junction1SS[0], junction2SS[0], junction3SS[0], junction4SS[0]};
+                    int[] allY = new int[]{junction1SS[1], junction2SS[1], junction3SS[1], junction4SS[1]};
+
+                    double area = polygonArea(allX, allY, 4);
+
+                    if(i == 0) {
+                        System.out.println("a: " + area);
+                    }
+
+                    int color = (int) (255*(area/255));
+
+                    color = validateColorBounds(color);
+
+                    g.setColor(new Color(color, color, color));
+
+                    g.fillPolygon(allX, allY, 4);
+                }
             }
-
         }
+    }
+
+    public static double polygonArea(int X[], int Y[], int n) {
+        // Initialize area
+        double area = 0.0;
+
+        // Calculate value of shoelace formula
+        int j = n - 1;
+        for (int i = 0; i < n; i++) {
+            area += (X[j] + X[i]) * (Y[j] - Y[i]);
+
+            // j is previous vertex to i
+            j = i;
+        }
+        return Math.abs(area / 2.0);
+    }
+
+    public boolean junctionConnectedToJunction(Junction junction1, Junction junction2){
+        for(Connector connector : junction1.getRelatedConnectors()){
+            if(connector.getStartJunction().equals(junction2) || connector.getEndJunction().equals(junction2)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Calculates the row from a given index.
+     *
+     * @param num - The given index.
+     * @returns the row.
+     */
+    public int getRowFromNumber(int num){
+        return (int)Math.floor(num/this.junctionCountX);
+    }
+
+    /**
+     * Calculates the column from a given index.
+     *
+     * @param num - The given index.
+     * @returns the column.
+     */
+    public int getColFromNumber(int num){
+        return num%this.junctionCountY;
     }
 
     /**

@@ -33,7 +33,7 @@ public class Junction {
 	 * @param y - The given y position of the Junction.
 	 * @param junctionState - The given state of the particle.
 	 */
-	public Junction(Cloth cloth, double x, double y, JunctionState junctionState) {
+	public Junction(Cloth cloth, double x, double y, int index, JunctionState junctionState) {
 		this.cloth = cloth;
 		this.currentX = x;
 		this.previousX = x;
