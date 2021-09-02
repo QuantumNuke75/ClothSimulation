@@ -17,40 +17,44 @@ public class Junction {
 	private double ax;
 	private double ay;
 
-	//Whether the Junction is immovable or not
-	private boolean isMovable;
-
+	//The total stress of the Junction.
 	public float totalStress;
 
+	//The current state of the particle
+	private JunctionState junctionState = null;
+
+	//An {@link ArrayList} of all the connected Connectors.
 	private ArrayList<Connector> relatedConnectors = new ArrayList<>();
 
 	/**
 	 *
 	 * @param cloth {@link Cloth}
-	 * @param posX
-	 * @param posY
-	 * @param isMovable
+	 * @param x - The given x position of the Junction.
+	 * @param y - The given y position of the Junction.
+	 * @param junctionState - The given state of the particle.
 	 */
-	public Junction(Cloth cloth, double posX, double posY, boolean isMovable) {
+	public Junction(Cloth cloth, double x, double y, JunctionState junctionState) {
 		this.cloth = cloth;
-		this.currentX = posX;
-		this.previousX = posX;
-		this.currentY = posY;
-		this.previousY = posY;
+		this.currentX = x;
+		this.previousX = x;
+		this.currentY = y;
+		this.previousY = y;
 		this.ax = 0;
 		this.ay = this.cloth.getGravityStrength();
-		this.isMovable = isMovable;
+		this.junctionState = junctionState;
 	}
 
 	/**
+	 * The update function. Calculates the new position based off the gravitational and wind acceleration. Also, calculates the collision for
+	 * the bounds of the simulation. The totalStress is calculated off of the total lengths of all associated Connectors.
 	 *
-	 * @param dT
+	 * @param dT - The delta time.
 	 */
 	public void updatePosition(double dT) {
-		if (this.isMovable) {
+		if (this.junctionState == JunctionState.NORMAL) {
 			//Calculates new position.
-			double tempX = this.currentX + cloth.getDampeningCoeff() * ((this.currentX - this.previousX) + 0.5 * cloth.getWindStrengthX() * dT * dT);
-			double tempY = this.currentY + cloth.getDampeningCoeff() * ((this.currentY - this.previousY) + 0.5 * cloth.getGravityStrength() * dT * dT);
+			double tempX = this.currentX + this.cloth.getDampeningCoeff() * ((this.currentX - this.previousX) + 0.5 * this.cloth.getWindStrengthX() * dT * dT);
+			double tempY = this.currentY + this.cloth.getDampeningCoeff() * ((this.currentY - this.previousY) + 0.5 * this.cloth.getGravityStrength() * dT * dT);
 
 			//Set previous coordinates.
 			this.previousX = this.currentX;
@@ -59,7 +63,6 @@ public class Junction {
 			//Setting current position to calculated position.
 			this.currentX = tempX;
 			this.currentY = tempY;
-
 
 			//Check for out of bounds on the y-axis.
 			if (this.currentY > 1000) {
@@ -77,16 +80,15 @@ public class Junction {
 				this.currentX = 0;
 			}
 
-			totalStress = 0;
-			for(Connector connector: relatedConnectors){
-				totalStress += connector.length;
+			this.totalStress = 0;
+			for(Connector connector: this.relatedConnectors){
+				this.totalStress += connector.length;
 			}
-
 		}
 	}
 
 	public Cloth getCloth() {
-		return cloth;
+		return this.cloth;
 	}
 
 	public void setCloth(Cloth cloth) {
@@ -94,7 +96,7 @@ public class Junction {
 	}
 
 	public double getCurrentX() {
-		return currentX;
+		return this.currentX;
 	}
 
 	public void setCurrentX(double currentX) {
@@ -102,7 +104,7 @@ public class Junction {
 	}
 
 	public double getCurrentY() {
-		return currentY;
+		return this.currentY;
 	}
 
 	public void setCurrentY(double currentY) {
@@ -110,7 +112,7 @@ public class Junction {
 	}
 
 	public double getPreviousX() {
-		return previousX;
+		return this.previousX;
 	}
 
 	public void setPreviousX(double previousX) {
@@ -118,7 +120,7 @@ public class Junction {
 	}
 
 	public double getPreviousY() {
-		return previousY;
+		return this.previousY;
 	}
 
 	public void setPreviousY(double previousY) {
@@ -126,7 +128,7 @@ public class Junction {
 	}
 
 	public double getAx() {
-		return ax;
+		return this.ax;
 	}
 
 	public void setAx(double ax) {
@@ -134,23 +136,23 @@ public class Junction {
 	}
 
 	public double getAy() {
-		return ay;
+		return this.ay;
 	}
 
 	public void setAy(double ay) {
 		this.ay = ay;
 	}
 
-	public boolean isMovable() {
-		return isMovable;
+	public JunctionState getJunctionState() {
+		return this.junctionState;
 	}
 
-	public void setMovable(boolean movable) {
-		isMovable = movable;
+	public void setJunctionState(JunctionState junctionState) {
+		this.junctionState = junctionState;
 	}
 
 	public ArrayList<Connector> getRelatedConnectors() {
-		return relatedConnectors;
+		return this.relatedConnectors;
 	}
 
 	public void setRelatedConnectors(ArrayList<Connector> relatedConnectors) {

@@ -1,8 +1,6 @@
 package main;
 
 import javax.swing.*;
-import javax.swing.colorchooser.AbstractColorChooserPanel;
-import java.applet.Applet;
 import java.awt.*;
 import java.util.Dictionary;
 import java.util.Enumeration;
@@ -18,7 +16,6 @@ public class Start{
 
     //The instance of the ClothSimulation.
     ClothSimulation clothSimulation;
-
 
     //Swing components
     JFrame frame;
@@ -37,8 +34,9 @@ public class Start{
     JButton selectConnectorColor = new JButton("Connector Color Picker");
 
     /**
+     * The main method.
      *
-     * @param args
+     * @param args - The command line arguments.
      */
     public static void main(String[] args) {
         //Creates a new static instance of the Start class.
@@ -52,6 +50,7 @@ public class Start{
     }
 
     /**
+     * Creates a new instance of the JFrame and the ClothSimulation.
      *
      * @param width
      * @param height
@@ -172,11 +171,12 @@ public class Start{
     }
 
     /**
+     * Method to setup all the visual elements of a JSlider.
      *
-     * @param slider
-     * @param name
-     * @param tickSpacing
-     * @param initialValue
+     * @param slider - The given JSlider.
+     * @param name - The name of the JSlider.
+     * @param tickSpacing - The interval spacing.
+     * @param initialValue - The initial value of the JSlider.
      */
     public void setupSliderVisuals(JSlider slider, String name, int tickSpacing, int initialValue){
         slider.setMajorTickSpacing(tickSpacing);
@@ -200,8 +200,9 @@ public class Start{
     }
 
     /**
+     * Method to set up all the visuals for a JLabel.
      *
-     * @param label
+     * @param label - The given JLabel.
      */
     public void setupSliderTextVisuals(JLabel label){
         label.setFont(new Font("ClearSans", Font.BOLD, 20));
@@ -211,8 +212,9 @@ public class Start{
     }
 
     /**
+     * Method to set up all the visuals for a JButton.
      *
-     * @param button
+     * @param button - The given JButton.
      */
     public void setupButtonVisuals(JButton button){
         button.setFont(new Font("ClearSans", Font.BOLD, 20));
@@ -221,5 +223,4 @@ public class Start{
         button.setOpaque(true);
         button.setFocusable(false);
     }
-
 }

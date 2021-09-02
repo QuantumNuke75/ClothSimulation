@@ -20,18 +20,22 @@ public class Cloth {
 	private float dampeningCoeff = 0.99f;
 
 	//Delta Time
-	double dT;
+	private double dT;
 
-	//Other
+	//The maximum stress of a given Junction.
 	private double maxStress = 175;
 
+	//List of all Connectors.
 	ArrayList<Connector> connectors = new ArrayList<Connector>();
+
+	//List of all Junctions.
 	ArrayList<Junction> junctionsArrayList = new ArrayList<Junction>();
 
     /**
-     *
-     * @param junctionCountX
-     * @param junctionCountY
+     * Initialization of the Cloth.
+	 *
+     * @param junctionCountX - The number of horizontal Junctions.
+     * @param junctionCountY - The number of vertical Junctions.
      */
 	public Cloth(int junctionCountX, int junctionCountY) {
 		this.junctionCountX = junctionCountX;
@@ -42,8 +46,9 @@ public class Cloth {
 	}
 
     /**
+	 * Updates all the cloth physics, including Connectors, Junctions, and ripping.
      *
-     * @param dT
+     * @param dT - The given delta time.
      */
 	public void updateCloth(double dT) {
 		for (Connector connector : this.connectors) {
@@ -51,8 +56,10 @@ public class Cloth {
 		}
 
 		this.dT = dT;
-		for(Junction junction : junctionsArrayList){
-			if(junction.isMovable()) {
+		for(Junction junction : this.junctionsArrayList){
+
+			//Only if the Junction is not anchored.
+			if(junction.getJunctionState() == JunctionState.NORMAL) {
 				junction.updatePosition(dT);
 			}
 		}
@@ -60,81 +67,103 @@ public class Cloth {
 	}
 
     /**
-     *
+     * Initializes all the initial Junctions.
      */
 	public void createJunctions() {
-		for(int i = 0; i < junctionCountX * junctionCountY; i++){
+		for(int i = 0; i < this.junctionCountX * this.junctionCountY; i++){
 			int row = getRowFromNumber(i);
 			int col = getColFromNumber(i);
-			this.junctionsArrayList.add(new Junction(this, startJunctionX + (junctionDistance * row), startJunctionY + (junctionDistance * col),
-					(col == 0 && (row == 0 || row == junctionCountY - 1 || row == junctionCountY / 2)) || (col == junctionCountX - 1 && (row == 0 || row == junctionCountY - 1)) ? false : true));
+			this.junctionsArrayList.add(new Junction(this, this.startJunctionX + (this.junctionDistance * row), this.startJunctionY + (this.junctionDistance * col),
+					(col == 0 && (row == 0 || row == this.junctionCountY - 1 || row == this.junctionCountY / 2)) || (col == this.junctionCountX - 1 && (row == 0 || row == this.junctionCountY - 1)) ? JunctionState.ANCHOR : JunctionState.NORMAL));
 		}
 	}
 
+	/**
+	 * Calculates the row from a given index.
+	 *
+	 * @param num - The given index.
+	 * @returns the row.
+	 */
 	public int getRowFromNumber(int num){
-		return (int)Math.floor(num/junctionCountX);
+		return (int)Math.floor(num/this.junctionCountX);
 	}
 
+	/**
+	 * Calculates the column from a given index.
+	 *
+	 * @param num - The given index.
+	 * @returns the column.
+	 */
 	public int getColFromNumber(int num){
-		return num%junctionCountY;
+		return num%this.junctionCountY;
 	}
 
     /**
-     *
+     * Initialized all the initial Connectors.
      */
 	public void createConnectors() {
 
-		for(int i = 0; i < junctionCountX * junctionCountY; i++){
+		for(int i = 0; i < this.junctionCountX * this.junctionCountY; i++){
 
-			Junction currentJunction = (Junction) junctionsArrayList.toArray()[i];
+			Junction currentJunction = (Junction) this.junctionsArrayList.toArray()[i];
 
-			if (getRowFromNumber(i) != junctionCountY - 1) {
-				Connector connector = new Connector(this, currentJunction, (Junction) junctionsArrayList.toArray()[i+junctionCountY]);
-				connectors.add(connector);
+			if (getRowFromNumber(i) != this.junctionCountY - 1) {
+				Connector connector = new Connector(this, currentJunction, (Junction) this.junctionsArrayList.toArray()[i+this.junctionCountY]);
+				this.connectors.add(connector);
 				currentJunction.getRelatedConnectors().add(connector);
-				((Junction) junctionsArrayList.toArray()[i+junctionCountY]).getRelatedConnectors().add(connector);
+				((Junction) this.junctionsArrayList.toArray()[i+this.junctionCountY]).getRelatedConnectors().add(connector);
 			}
-			if (getColFromNumber(i) != junctionCountX - 1) {
-				Connector connector = new Connector(this, currentJunction, (Junction) junctionsArrayList.toArray()[i+1]);
-				connectors.add(connector);
+			if (getColFromNumber(i) != this.junctionCountX - 1) {
+				Connector connector = new Connector(this, currentJunction, (Junction) this.junctionsArrayList.toArray()[i+1]);
+				this.connectors.add(connector);
 				currentJunction.getRelatedConnectors().add(connector);
-				((Junction) junctionsArrayList.toArray()[i+1]).getRelatedConnectors().add(connector);
+				((Junction) this.junctionsArrayList.toArray()[i+1]).getRelatedConnectors().add(connector);
 			}
 		}
 	}
 
-    /**
-     * Method to break all Junctions where the stress value is too high.
-     */
+
 
 
 //if the stress junction has any connectors that have a junction not connected with any other connectors
 //assign that connector and keep it
+	/**
+	 * Method to break all Junctions where the stress value is too high.
+	 */
 	public void removeBrokenConnectors(){
 
+		//Loop through all Junction without running into a {@link java.util.ConcurrentModificationException}
 		for(Object o : this.junctionsArrayList.toArray()) {
 			Junction junction = (Junction) o;
-			if (junction.totalStress > maxStress) {
+
+			//If the Junction's stress is greater that the permitted stress.
+			if (junction.totalStress > this.maxStress) {
+
+				//For every related Connector to the Junction.
 				for(Connector relatedConnector : junction.getRelatedConnectors()){
+
 					//Create a replacement Junction for every related Connector.
-					Junction replacementJunction = new Junction(this, junction.getCurrentX(), junction.getCurrentY(), true);
+					Junction replacementJunction = new Junction(this, junction.getCurrentX(), junction.getCurrentY(), JunctionState.NORMAL);
+
+					//Replace the end Junction if the Junctions are equal.
 					if(relatedConnector.getEndJunction().equals(junction)){
 						relatedConnector.setEndJunction(replacementJunction);
-						junctionsArrayList.add(replacementJunction);
+						this.junctionsArrayList.add(replacementJunction);
 					}
+					//Replace the start Junction if the Junctions are equal.
 					else{
 						relatedConnector.setStartJunction(replacementJunction);
-						junctionsArrayList.add(replacementJunction);
+						this.junctionsArrayList.add(replacementJunction);
 					}
 				}
 				//Remove stressed Junction from existence
-				junctionsArrayList.remove(junction);
+				this.junctionsArrayList.remove(junction);
 			}
 		}
 	}
 
 	public int getJunctionDistance() {
-		return junctionDistance;
+		return this.junctionDistance;
 	}
 
 	public void setJunctionDistance(int junctionDistance) {
@@ -142,7 +171,7 @@ public class Cloth {
 	}
 
 	public int getJunctionCountX() {
-		return junctionCountX;
+		return this.junctionCountX;
 	}
 
 	public void setJunctionCountX(int junctionCountX) {
@@ -150,7 +179,7 @@ public class Cloth {
 	}
 
 	public int getJunctionCountY() {
-		return junctionCountY;
+		return this.junctionCountY;
 	}
 
 	public void setJunctionCountY(int junctionCountY) {
@@ -158,7 +187,7 @@ public class Cloth {
 	}
 
 	public int getStartJunctionX() {
-		return startJunctionX;
+		return this.startJunctionX;
 	}
 
 	public void setStartJunctionX(int startJunctionX) {
@@ -166,7 +195,7 @@ public class Cloth {
 	}
 
 	public int getStartJunctionY() {
-		return startJunctionY;
+		return this.startJunctionY;
 	}
 
 	public void setStartJunctionY(int startJunctionY) {
@@ -174,7 +203,7 @@ public class Cloth {
 	}
 
 	public float getWindStrengthX() {
-		return windStrengthX;
+		return this.windStrengthX;
 	}
 
 	public void setWindStrengthX(float windStrengthX) {
@@ -182,7 +211,7 @@ public class Cloth {
 	}
 
 	public float getGravityStrength() {
-		return gravityStrength;
+		return this.gravityStrength;
 	}
 
 	public void setGravityStrength(float gravityStrength) {
@@ -190,7 +219,7 @@ public class Cloth {
 	}
 
 	public float getDampeningCoeff() {
-		return dampeningCoeff;
+		return this.dampeningCoeff;
 	}
 
 	public void setDampeningCoeff(float dampeningCoeff) {
@@ -198,7 +227,7 @@ public class Cloth {
 	}
 
 	public double getdT() {
-		return dT;
+		return this.dT;
 	}
 
 	public void setdT(double dT) {
@@ -206,7 +235,7 @@ public class Cloth {
 	}
 
 	public ArrayList<Connector> getConnectors() {
-		return connectors;
+		return this.connectors;
 	}
 
 	public void setConnectors(ArrayList<Connector> connectors) {

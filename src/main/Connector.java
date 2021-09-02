@@ -11,10 +11,11 @@ public class Connector {
 	Double normalLength = 10.0;
 
 	/**
+	 * The construtor for a Connector.
 	 *
-	 * @param cloth {@link Cloth}
-	 * @param start
-	 * @param end
+	 * @param cloth {@link Cloth} - The Cloth instance.
+	 * @param start - The associated "starting" Junction.
+	 * @param end - The associated "ending" Junction.
 	 */
 	public Connector(Cloth cloth, Junction start, Junction end) {
 		this.cloth = cloth;
@@ -23,53 +24,46 @@ public class Connector {
 	}
 
 	/**
+	 * Calculates the new length of the Connector based on the distance between the associated Junctions.
 	 *
-	 * @return
+	 * @returns the length of the Connector.
 	 */
 	public Double getLength() {
-		this.length = Math.pow(Math.pow(endJunction.getCurrentX() - startJunction.getCurrentX(), 2)
-				+ Math.pow(endJunction.getCurrentY() - startJunction.getCurrentY(), 2), 0.5);
-		return length;
+		//Sets this length to the calculated length between the two Junctions.
+		this.length = Math.pow(Math.pow(endJunction.getCurrentX() - startJunction.getCurrentX(), 2) + Math.pow(endJunction.getCurrentY() - startJunction.getCurrentY(), 2), 0.5);
+		return this.length;
 	}
 
 	/**
-	 *
+	 * The update function. Sets the Connector's position based on the tension caused by the associated {@link Junction}.
 	 */
 	public void update() {
 
-		double differenceX = startJunction.getCurrentX() - endJunction.getCurrentX();
-		double differenceY = startJunction.getCurrentY() - endJunction.getCurrentY();
+		double differenceX = this.startJunction.getCurrentX() - this.endJunction.getCurrentX();
+		double differenceY = this.startJunction.getCurrentY() - this.endJunction.getCurrentY();
 
 		this.getLength();
-		double difference = (normalLength - this.length) / this.length;
+		double difference = (this.normalLength - this.length) / this.length;
 
-		// changes material properties
-		// 0.05   0.5 normal
+		// Changes the material properties.
+		// 0.5   0.5 normal
 		// 1 1 glitch
 		double translationX = differenceX * 0.5 * difference * 0.5;
 		double translationY = differenceY * 0.5 * difference * 0.5;
 
-		if (startJunction.isMovable()) {
+		if (this.startJunction.getJunctionState() == JunctionState.NORMAL) {
 			this.startJunction.setCurrentX(this.startJunction.getCurrentX() + translationX);
 			this.startJunction.setCurrentY(this.startJunction.getCurrentY() + translationY);
 		}
 
-		if (endJunction.isMovable()) {
+		if (this.endJunction.getJunctionState() == JunctionState.NORMAL) {
 			this.endJunction.setCurrentX(this.endJunction.getCurrentX() - translationX);
 			this.endJunction.setCurrentY(this.endJunction.getCurrentY() - translationY);
 		}
 	}
 
-	/**
-	 *
-	 * @return
-	 */
-	public Junction getSingleJunction(){
-		return endJunction==null?startJunction:endJunction;
-	}
-
 	public Junction getStartJunction() {
-		return startJunction;
+		return this.startJunction;
 	}
 
 	public void setStartJunction(Junction startJunction) {
@@ -77,7 +71,7 @@ public class Connector {
 	}
 
 	public Junction getEndJunction() {
-		return endJunction;
+		return this.endJunction;
 	}
 
 	public void setEndJunction(Junction endJunction) {
@@ -89,7 +83,7 @@ public class Connector {
 	}
 
 	public Double getNormalLength() {
-		return normalLength;
+		return this.normalLength;
 	}
 
 	public void setNormalLength(Double normalLength) {
