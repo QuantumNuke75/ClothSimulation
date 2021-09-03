@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Cloth {
     //The distance between each Junction upon creation.
-	private int junctionDistance = 15;
+	private int junctionDistance = 25;
 
     //The number of Junction on each axis.
 	private int junctionCountX;
@@ -23,7 +23,7 @@ public class Cloth {
 	private double dT;
 
 	//The maximum stress of a given Junction.
-	private double maxStress = 1000;
+	private double maxStress = 225;
 
 	//List of all Connectors.
 	ArrayList<Connector> connectors = new ArrayList<Connector>();

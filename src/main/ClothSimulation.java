@@ -25,6 +25,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
     private boolean drawJunction = false;
     private boolean drawConnectors = true;
     private boolean showStress = true;
+    private boolean showShading = false;
 
     //Default Color Settings
     private Color junctionColor = Color.BLUE;
@@ -91,7 +92,9 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
 		g.drawLine(thousandCoordinates[0] + (this.getWidth()-thousandCoordinates[0])/2, thousandCoordinates[1], 0 + (this.getWidth()-thousandCoordinates[0])/2, thousandCoordinates[1]);
 		g.drawLine(0 + (this.getWidth()-thousandCoordinates[0])/2, thousandCoordinates[1], (this.getWidth()-thousandCoordinates[0])/2, 0);
 
-        colorAreas(g);
+		if(showShading) {
+            colorAreas(g);
+        }
 
         //If the option drawConnectors in enabled.
         if (this.drawConnectors) {
@@ -171,17 +174,22 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
 
                 if(junctionConnectedToJunction(junction1, junction2) && junctionConnectedToJunction(junction2, junction3) && junctionConnectedToJunction(junction3, junction4)  && junctionConnectedToJunction(junction4, junction1)){
 
+                    int[] thousandCoordinates = convertSimulationCoordsToScreenSpaceCoords(1000, 1000);
+
                     int[] junction1SS = convertSimulationCoordsToScreenSpaceCoords((int)junction1.getCurrentX(), (int)junction1.getCurrentY());
                     int[] junction2SS = convertSimulationCoordsToScreenSpaceCoords((int)junction2.getCurrentX(), (int)junction2.getCurrentY());
                     int[] junction3SS = convertSimulationCoordsToScreenSpaceCoords((int)junction3.getCurrentX(), (int)junction3.getCurrentY());
                     int[] junction4SS = convertSimulationCoordsToScreenSpaceCoords((int)junction4.getCurrentX(), (int)junction4.getCurrentY());
 
-                    int[] allX = new int[]{junction1SS[0], junction2SS[0], junction3SS[0], junction4SS[0]};
-                    int[] allY = new int[]{junction1SS[1], junction2SS[1], junction3SS[1], junction4SS[1]};
+                    int[] allXCalc = new int[]{(int) junction1.getCurrentX(), (int) junction2.getCurrentX(),(int) junction3.getCurrentX(),(int) junction4.getCurrentX()};
+                    int[] allYCalc = new int[]{(int) junction1.getCurrentY(), (int) junction2.getCurrentY(),(int) junction3.getCurrentY(),(int) junction4.getCurrentY()};
 
-                    double area = polygonArea(allX, allY, 4);
+                    int[] allX = new int[]{junction1SS[0] + (this.getWidth()-thousandCoordinates[0])/2, junction2SS[0] + (this.getWidth()-thousandCoordinates[0])/2, junction3SS[0] + (this.getWidth()-thousandCoordinates[0])/2, junction4SS[0] + (this.getWidth()-thousandCoordinates[0])/2};
+                    int[] allY = new int[]{junction1SS[1] + (this.getHeight()-thousandCoordinates[1])/2, junction2SS[1] + (this.getHeight()-thousandCoordinates[1])/2, junction3SS[1] + (this.getHeight()-thousandCoordinates[1])/2, junction4SS[1] + (this.getHeight()-thousandCoordinates[1])/2};
 
-                    int color = (int) (255*(area/300));
+                    double area = polygonArea(allXCalc, allYCalc, 4);
+
+                    int color = (int) (255*(area/1000));
 
                     color = validateColorBounds(color);
 
@@ -398,5 +406,13 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
 
     public void setConnectorColor(Color connectorColor) {
         this.connectorColor = connectorColor;
+    }
+
+    public boolean isShowShading() {
+        return this.showShading;
+    }
+
+    public void setShowShading(boolean showShading) {
+        this.showShading = showShading;
     }
 }

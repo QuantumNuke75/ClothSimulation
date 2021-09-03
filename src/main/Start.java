@@ -11,8 +11,8 @@ public class Start{
     public static Start INSTANCE;
 
     //Width and height of the Cloth.
-    int junctionCountX = 50;
-    int junctionCountY = 50;
+    int junctionCountX = 20;
+    int junctionCountY = 20;
 
     //The instance of the ClothSimulation.
     ClothSimulation clothSimulation;
@@ -29,6 +29,7 @@ public class Start{
     JButton toggleShowJunctions = new JButton("Show Junctions: Off");
     JButton toggleShowConnectors = new JButton("Show Connectors: Off");
     JButton toggleShowStress = new JButton("Show Stress: Off");
+    JButton toggleShading = new JButton("Show Shading: Off");
 
     JButton selectJunctionColor = new JButton("Junction Color Picker");
     JButton selectConnectorColor = new JButton("Connector Color Picker");
@@ -108,6 +109,12 @@ public class Start{
             toggleShowStress.setText(("Show Stress: " + (clothSimulation.isShowStress()?"On":"Off")));
         });
 
+        //Change listener for Stress show toggle
+        toggleShading.addActionListener(e ->{
+            clothSimulation.setShowShading(!clothSimulation.isShowShading());
+            toggleShading.setText(("Show Shading: " + (clothSimulation.isShowShading()?"On":"Off")));
+        });
+
         //Action listener for opening the color picker for Junctions.
         selectJunctionColor.addActionListener(e ->{
             clothSimulation.setJunctionColor(JColorChooser.showDialog(clothSimulation, "Junction Color Picker", null));
@@ -138,6 +145,7 @@ public class Start{
         setupButtonVisuals(toggleShowJunctions);
         setupButtonVisuals(toggleShowConnectors);
         setupButtonVisuals(toggleShowStress);
+        setupButtonVisuals(toggleShading);
         setupButtonVisuals(selectJunctionColor);
         setupButtonVisuals(selectConnectorColor);
 
@@ -157,6 +165,7 @@ public class Start{
         options.add(toggleShowJunctions);
         options.add(toggleShowConnectors);
         options.add(toggleShowStress);
+        options.add(toggleShading);
         options.add(selectJunctionColor);
         options.add(selectConnectorColor);
 

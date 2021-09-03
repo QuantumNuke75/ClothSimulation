@@ -8,7 +8,7 @@ public class Connector {
 	Junction startJunction;
 	Junction endJunction;
 	Double length;
-	Double normalLength = 10.0;
+	Double normalLength = 20.0;
 
 	/**
 	 * The construtor for a Connector.
