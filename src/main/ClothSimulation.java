@@ -158,13 +158,15 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
 
 
     /**
-     *
+     * Colors in all the polygons contained within the Cloth.
      *
      * @param g - The given Graphics2D object.
      */
     public void colorAreas(Graphics2D g){
+
         for(int i = 0; i < junctionCountX*junctionCountY; i++){
 
+            //If selected junction is not last row or column
             if(getRowFromNumber(i) < junctionCountY - 1 && getColFromNumber(i) < junctionCountX - 1){
 
                 Junction junction1 = this.cloth.junctionsArrayList.get(i);
@@ -172,41 +174,58 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
                 Junction junction3 = this.cloth.junctionsArrayList.get(i+junctionCountY+1);
                 Junction junction4 = this.cloth.junctionsArrayList.get(i+junctionCountY);
 
+                //If all Junctions form a valid area.
                 if(junctionConnectedToJunction(junction1, junction2) && junctionConnectedToJunction(junction2, junction3) && junctionConnectedToJunction(junction3, junction4)  && junctionConnectedToJunction(junction4, junction1)){
 
+                    //The coordinates of the maximum dimensions of the simulation converted to the Screen Space coordinates.
                     int[] thousandCoordinates = convertSimulationCoordsToScreenSpaceCoords(1000, 1000);
 
+                    //The coordinates of all the Junctions converted to Screen Space coordinates.
                     int[] junction1SS = convertSimulationCoordsToScreenSpaceCoords((int)junction1.getCurrentX(), (int)junction1.getCurrentY());
                     int[] junction2SS = convertSimulationCoordsToScreenSpaceCoords((int)junction2.getCurrentX(), (int)junction2.getCurrentY());
                     int[] junction3SS = convertSimulationCoordsToScreenSpaceCoords((int)junction3.getCurrentX(), (int)junction3.getCurrentY());
                     int[] junction4SS = convertSimulationCoordsToScreenSpaceCoords((int)junction4.getCurrentX(), (int)junction4.getCurrentY());
 
+                    //The coordinates of all the vertices used for area calculation.
                     int[] allXCalc = new int[]{(int) junction1.getCurrentX(), (int) junction2.getCurrentX(),(int) junction3.getCurrentX(),(int) junction4.getCurrentX()};
                     int[] allYCalc = new int[]{(int) junction1.getCurrentY(), (int) junction2.getCurrentY(),(int) junction3.getCurrentY(),(int) junction4.getCurrentY()};
 
+                    //The coordinates of all the vertices used to draw the polygon.
                     int[] allX = new int[]{junction1SS[0] + (this.getWidth()-thousandCoordinates[0])/2, junction2SS[0] + (this.getWidth()-thousandCoordinates[0])/2, junction3SS[0] + (this.getWidth()-thousandCoordinates[0])/2, junction4SS[0] + (this.getWidth()-thousandCoordinates[0])/2};
                     int[] allY = new int[]{junction1SS[1] + (this.getHeight()-thousandCoordinates[1])/2, junction2SS[1] + (this.getHeight()-thousandCoordinates[1])/2, junction3SS[1] + (this.getHeight()-thousandCoordinates[1])/2, junction4SS[1] + (this.getHeight()-thousandCoordinates[1])/2};
 
+                    //Calculate area of polygon between given coordinates.
                     double area = polygonArea(allXCalc, allYCalc, 4);
 
                     int color = (int) (255*(area/1000));
 
+                    //Validate color bounds
                     color = validateColorBounds(color);
 
+                    //Sets grayscale color
                     g.setColor(new Color(color, color, color));
 
+                    //Draws polygon
                     g.fillPolygon(allX, allY, 4);
                 }
             }
         }
     }
 
-    public static double polygonArea(int x[], int y[], int namVertices) {
+    /**
+     * Calculates and returns the area of a polygon given the coordinates of all the vertices.
+     *
+     * @param x - The x coordinates of all the vertices.
+     * @param y - The y coordinates of all the vertices.
+     * @param numVertices - The number of vertices in the polygon.
+     * @returns the area of the polygon.
+     */
+    public double polygonArea(int x[], int y[], int numVertices) {
         double area = 0;
 
-        int j = namVertices - 1;
-        for (int i = 0; i < namVertices; i++) {
-            area += (x[j] + x[i]) * (y[j] - y[i]);
+        int j = numVertices - 1;
+        for (int i = 0; i < numVertices; i++) {
+            area += (x[j]  + x[i]) * (y[j] - y[i]);
             j = i;
         }
         return Math.abs(area / 2.0);

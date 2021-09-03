@@ -11,8 +11,8 @@ public class Start{
     public static Start INSTANCE;
 
     //Width and height of the Cloth.
-    int junctionCountX = 20;
-    int junctionCountY = 20;
+    int junctionCountX = 21;
+    int junctionCountY = 21;
 
     //The instance of the ClothSimulation.
     ClothSimulation clothSimulation;
@@ -109,7 +109,7 @@ public class Start{
             toggleShowStress.setText(("Show Stress: " + (clothSimulation.isShowStress()?"On":"Off")));
         });
 
-        //Change listener for Stress show toggle
+        //Change listener for Shading show toggle
         toggleShading.addActionListener(e ->{
             clothSimulation.setShowShading(!clothSimulation.isShowShading());
             toggleShading.setText(("Show Shading: " + (clothSimulation.isShowShading()?"On":"Off")));
