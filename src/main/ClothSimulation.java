@@ -203,7 +203,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
                     color = validateColorBounds(color);
 
                     //Sets grayscale color
-                    g.setColor(new Color(color, color, color));
+                    g.setColor(new Color(0, 0, color));
 
                     //Draws polygon
                     g.fillPolygon(allX, allY, 4);
