@@ -131,7 +131,7 @@ public class Cloth {
 	/**
 	 * Method to break all Junctions where the stress value is too high.
 	 */
-	public void removeBrokenConnectors(){
+	public void removeBrokenJunctions(){
 
 		//Loop through all Junction without running into a {@link java.util.ConcurrentModificationException}
 		for(Object o : this.junctionsArrayList.toArray()) {
@@ -159,6 +159,21 @@ public class Cloth {
 				}
 				//Remove stressed Junction from still being where it was.
 				junction.getRelatedConnectors().clear();;
+			}
+		}
+	}
+
+	/**
+	 * Method to break all Connectors where the stress value is too high.
+	 */
+	public void removeBrokenConnectors(){
+
+		//Loop through all Junction without running into a {@link java.util.ConcurrentModificationException}
+		for(Object o : this.connectors.toArray()) {
+			Connector connector = (Connector) o;
+
+			if(connector.length > maxStress){
+				connectors.remove(connector);
 			}
 		}
 	}

@@ -347,7 +347,10 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
      */
     @Override
     public void mouseDragged(MouseEvent e) {
-        this.isDragging = true;
+
+        if(!e.isShiftDown()){
+            this.isDragging = true;
+        }
     }
 
     /**
@@ -359,7 +362,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
     public void mouseReleased(MouseEvent e) {
         this.isDragging = false;
         if (this.junctionBeingDragged != null) {
-            this.junctionBeingDragged.setJunctionState(JunctionState.NORMAL);
+            //this.junctionBeingDragged.setJunctionState(JunctionState.NORMAL);
             this.junctionBeingDragged = null;
         }
     }
@@ -379,6 +382,30 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
     }
 
     public void mouseClicked(MouseEvent e) {
+
+        int x = e.getX();
+        int y = e.getY();
+
+        Rectangle selectionBoxSimulation = new Rectangle(x - 5, y - 5, 10, 10);
+        for (Junction junction : this.cloth.junctionsArrayList) {
+
+            //The coordinates of the Junction converted from simulation coordinates to the Screen Space coordinates.
+            int[] simulationCoords = convertSimulationCoordsToScreenSpaceCoords((int)junction.getCurrentX(), (int)junction.getCurrentY());
+
+            //The maximum coordinates of the simulation converted into Screen Space coordinates.
+            int[] thousandCoords = convertSimulationCoordsToScreenSpaceCoords(1000,1000);
+
+            //If the current Junction is within the bounds of the defined Rectangle.
+            if (selectionBoxSimulation.contains(simulationCoords[0] + (this.getWidth() - thousandCoords[0])/2, simulationCoords[1] + (this.getHeight() - thousandCoords[1])/2)){
+                if(junction.getJunctionState() != JunctionState.NORMAL){
+                    junction.setJunctionState(JunctionState.NORMAL);
+                }
+                else{
+                    junction.setJunctionState(JunctionState.ANCHOR);
+                }
+                break;
+            }
+        }
     }
 
     public void mouseExited(MouseEvent e) {
