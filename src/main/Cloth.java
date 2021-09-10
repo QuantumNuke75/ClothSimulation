@@ -123,11 +123,6 @@ public class Cloth {
 		}
 	}
 
-
-
-
-//if the stress junction has any connectors that have a junction not connected with any other connectors
-//assign that connector and keep it
 	/**
 	 * Method to break all Junctions where the stress value is too high.
 	 */
