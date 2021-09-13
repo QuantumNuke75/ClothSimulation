@@ -4,162 +4,158 @@ import java.util.ArrayList;
 
 public class Junction {
 
-	//The instance of the cloth.
-	private Cloth cloth;
+    //The total stress of the Junction.
+    public float totalStress;
+    //The instance of the cloth.
+    private Cloth cloth;
+    //Position related variables.
+    private double currentX;
+    private double currentY;
+    private double previousX;
+    private double previousY;
+    //Acceleration Related Variables
+    private double ax;
+    private double ay;
+    //The current state of the particle
+    private JunctionState junctionState = null;
 
-	//Position related variables.
-	private double currentX;
-	private double currentY;
-	private double previousX;
-	private double previousY;
+    //An {@link ArrayList} of all the connected Connectors.
+    private ArrayList<Connector> relatedConnectors = new ArrayList<>();
 
-	//Acceleration Related Variables
-	private double ax;
-	private double ay;
+    /**
+     * @param cloth         {@link Cloth}
+     * @param x             - The given x position of the Junction.
+     * @param y             - The given y position of the Junction.
+     * @param junctionState - The given state of the particle.
+     */
+    public Junction(Cloth cloth, double x, double y, int index, JunctionState junctionState) {
+        this.cloth = cloth;
+        this.currentX = x;
+        this.previousX = x;
+        this.currentY = y;
+        this.previousY = y;
+        this.ax = 0;
+        this.ay = this.cloth.getGravityStrength();
+        this.junctionState = junctionState;
+    }
 
-	//The total stress of the Junction.
-	public float totalStress;
+    /**
+     * The update function. Calculates the new position based off the gravitational and wind acceleration. Also, calculates the collision for
+     * the bounds of the simulation. The totalStress is calculated off of the total lengths of all associated Connectors.
+     *
+     * @param dT - The delta time.
+     */
+    public void update(double dT) {
+        if (this.junctionState == JunctionState.NORMAL) {
+            //Calculates new position.
+            double tempX = this.currentX + this.cloth.getDampeningCoeff() * ((this.currentX - this.previousX) + 0.5 * this.cloth.getWindStrengthX() * dT * dT);
+            double tempY = this.currentY + this.cloth.getDampeningCoeff() * ((this.currentY - this.previousY) + 0.5 * this.cloth.getGravityStrength() * dT * dT);
 
-	//The current state of the particle
-	private JunctionState junctionState = null;
+            //Set previous coordinates.
+            this.previousX = this.currentX;
+            this.previousY = this.currentY;
 
-	//An {@link ArrayList} of all the connected Connectors.
-	private ArrayList<Connector> relatedConnectors = new ArrayList<>();
+            //Setting current position to calculated position.
+            this.currentX = tempX;
+            this.currentY = tempY;
 
-	/**
-	 *
-	 * @param cloth {@link Cloth}
-	 * @param x - The given x position of the Junction.
-	 * @param y - The given y position of the Junction.
-	 * @param junctionState - The given state of the particle.
-	 */
-	public Junction(Cloth cloth, double x, double y, int index, JunctionState junctionState) {
-		this.cloth = cloth;
-		this.currentX = x;
-		this.previousX = x;
-		this.currentY = y;
-		this.previousY = y;
-		this.ax = 0;
-		this.ay = this.cloth.getGravityStrength();
-		this.junctionState = junctionState;
-	}
+            //Check for out of bounds on the y-axis.
+            if (this.currentY > 1000) {
+                this.currentY = 1000;
+            } else if (this.currentY < 0) {
+                this.currentY = 0;
+            }
 
-	/**
-	 * The update function. Calculates the new position based off the gravitational and wind acceleration. Also, calculates the collision for
-	 * the bounds of the simulation. The totalStress is calculated off of the total lengths of all associated Connectors.
-	 *
-	 * @param dT - The delta time.
-	 */
-	public void update(double dT) {
-		if (this.junctionState == JunctionState.NORMAL) {
-			//Calculates new position.
-			double tempX = this.currentX + this.cloth.getDampeningCoeff() * ((this.currentX - this.previousX) + 0.5 * this.cloth.getWindStrengthX() * dT * dT);
-			double tempY = this.currentY + this.cloth.getDampeningCoeff() * ((this.currentY - this.previousY) + 0.5 * this.cloth.getGravityStrength() * dT * dT);
+            //Check for out of bounds on the x-axis.
+            if (this.currentX > 1000) {
+                this.currentX = 1000;
+            } else if (this.currentX < 0) {
+                this.currentX = 0;
+            }
 
-			//Set previous coordinates.
-			this.previousX = this.currentX;
-			this.previousY = this.currentY;
+            this.totalStress = 0;
+            for (Connector connector : this.relatedConnectors) {
+                this.totalStress += connector.length;
+            }
+        }
+    }
 
-			//Setting current position to calculated position.
-			this.currentX = tempX;
-			this.currentY = tempY;
+    /**
+     * Getters and Setters
+     */
+    public Cloth getCloth() {
+        return this.cloth;
+    }
 
-			//Check for out of bounds on the y-axis.
-			if (this.currentY > 1000) {
-				this.currentY = 1000;
-			}			
-			else if (this.currentY < 0) {
-				this.currentY = 0;
-			}
+    public void setCloth(Cloth cloth) {
+        this.cloth = cloth;
+    }
 
-			//Check for out of bounds on the x-axis.
-			if (this.currentX > 1000) {
-				this.currentX = 1000;
-			}			
-			else if (this.currentX < 0) {
-				this.currentX = 0;
-			}
+    public double getCurrentX() {
+        return this.currentX;
+    }
 
-			this.totalStress = 0;
-			for(Connector connector: this.relatedConnectors){
-				this.totalStress += connector.length;
-			}
-		}
-	}
+    public void setCurrentX(double currentX) {
+        this.currentX = currentX;
+    }
 
-	public Cloth getCloth() {
-		return this.cloth;
-	}
+    public double getCurrentY() {
+        return this.currentY;
+    }
 
-	public void setCloth(Cloth cloth) {
-		this.cloth = cloth;
-	}
+    public void setCurrentY(double currentY) {
+        this.currentY = currentY;
+    }
 
-	public double getCurrentX() {
-		return this.currentX;
-	}
+    public double getPreviousX() {
+        return this.previousX;
+    }
 
-	public void setCurrentX(double currentX) {
-		this.currentX = currentX;
-	}
+    public void setPreviousX(double previousX) {
+        this.previousX = previousX;
+    }
 
-	public double getCurrentY() {
-		return this.currentY;
-	}
+    public double getPreviousY() {
+        return this.previousY;
+    }
 
-	public void setCurrentY(double currentY) {
-		this.currentY = currentY;
-	}
+    public void setPreviousY(double previousY) {
+        this.previousY = previousY;
+    }
 
-	public double getPreviousX() {
-		return this.previousX;
-	}
+    public double getAx() {
+        return this.ax;
+    }
 
-	public void setPreviousX(double previousX) {
-		this.previousX = previousX;
-	}
+    public void setAx(double ax) {
+        this.ax = ax;
+    }
 
-	public double getPreviousY() {
-		return this.previousY;
-	}
+    public double getAy() {
+        return this.ay;
+    }
 
-	public void setPreviousY(double previousY) {
-		this.previousY = previousY;
-	}
+    public void setAy(double ay) {
+        this.ay = ay;
+    }
 
-	public double getAx() {
-		return this.ax;
-	}
+    public JunctionState getJunctionState() {
+        return this.junctionState;
+    }
 
-	public void setAx(double ax) {
-		this.ax = ax;
-	}
+    public void setJunctionState(JunctionState junctionState) {
+        this.junctionState = junctionState;
+    }
 
-	public double getAy() {
-		return this.ay;
-	}
+    public ArrayList<Connector> getRelatedConnectors() {
+        return this.relatedConnectors;
+    }
 
-	public void setAy(double ay) {
-		this.ay = ay;
-	}
+    public void setRelatedConnectors(ArrayList<Connector> relatedConnectors) {
+        this.relatedConnectors = relatedConnectors;
+    }
 
-	public JunctionState getJunctionState() {
-		return this.junctionState;
-	}
-
-	public void setJunctionState(JunctionState junctionState) {
-		this.junctionState = junctionState;
-	}
-
-	public ArrayList<Connector> getRelatedConnectors() {
-		return this.relatedConnectors;
-	}
-
-	public void setRelatedConnectors(ArrayList<Connector> relatedConnectors) {
-		this.relatedConnectors = relatedConnectors;
-	}
-
-	public void addToRelatedConnectors(Connector connector){
-		this.relatedConnectors.add(connector);
-	}
+    public void addToRelatedConnectors(Connector connector) {
+        this.relatedConnectors.add(connector);
+    }
 }

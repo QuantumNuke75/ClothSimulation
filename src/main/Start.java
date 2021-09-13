@@ -5,7 +5,7 @@ import java.awt.*;
 import java.util.Dictionary;
 import java.util.Enumeration;
 
-public class Start{
+public class Start {
 
     //Instance of this class.
     public static Start INSTANCE;
@@ -57,7 +57,7 @@ public class Start{
      * @param height
      * @return
      */
-    public ClothSimulation createWindow(int width, int height){
+    public ClothSimulation createWindow(int width, int height) {
         //Create a new JFrame instance.
         frame = new JFrame("Cloth Simulation");
 
@@ -78,50 +78,50 @@ public class Start{
 
         //Change listener for Wind slider.
         windSlider.addChangeListener(e -> {
-            clothSimulation.cloth.setWindStrengthX(windSlider.getValue()/10f);
+            clothSimulation.cloth.setWindStrengthX(windSlider.getValue() / 10f);
         });
 
         //Change listener for Gravity slider.
         gravitySlider.addChangeListener(e -> {
-            clothSimulation.cloth.setGravityStrength(gravitySlider.getValue()/10f);
+            clothSimulation.cloth.setGravityStrength(gravitySlider.getValue() / 10f);
         });
 
         //Change listener for Dampening slider.
         dampeningSlider.addChangeListener(e -> {
-            clothSimulation.cloth.setDampeningCoeff(dampeningSlider.getValue()/100f);
+            clothSimulation.cloth.setDampeningCoeff(dampeningSlider.getValue() / 100f);
         });
 
         //Change listener for Junction show toggle
-        toggleShowJunctions.addActionListener(e ->{
+        toggleShowJunctions.addActionListener(e -> {
             clothSimulation.setDrawJunction(!clothSimulation.isDrawJunction());
-            toggleShowJunctions.setText(("Show Junctions: " + (clothSimulation.isDrawJunction()?"On":"Off")));
+            toggleShowJunctions.setText(("Show Junctions: " + (clothSimulation.isDrawJunction() ? "On" : "Off")));
         });
 
         //Change listener for Connector show toggle
-        toggleShowConnectors.addActionListener(e ->{
+        toggleShowConnectors.addActionListener(e -> {
             clothSimulation.setDrawConnectors(!clothSimulation.isDrawConnectors());
-            toggleShowConnectors.setText(("Show Connectors: " + (clothSimulation.isDrawConnectors()?"On":"Off")));
+            toggleShowConnectors.setText(("Show Connectors: " + (clothSimulation.isDrawConnectors() ? "On" : "Off")));
         });
 
         //Change listener for Stress show toggle
-        toggleShowStress.addActionListener(e ->{
+        toggleShowStress.addActionListener(e -> {
             clothSimulation.setShowStress(!clothSimulation.isShowStress());
-            toggleShowStress.setText(("Show Stress: " + (clothSimulation.isShowStress()?"On":"Off")));
+            toggleShowStress.setText(("Show Stress: " + (clothSimulation.isShowStress() ? "On" : "Off")));
         });
 
         //Change listener for Shading show toggle
-        toggleShading.addActionListener(e ->{
+        toggleShading.addActionListener(e -> {
             clothSimulation.setShowShading(!clothSimulation.isShowShading());
-            toggleShading.setText(("Show Shading: " + (clothSimulation.isShowShading()?"On":"Off")));
+            toggleShading.setText(("Show Shading: " + (clothSimulation.isShowShading() ? "On" : "Off")));
         });
 
         //Action listener for opening the color picker for Junctions.
-        selectJunctionColor.addActionListener(e ->{
+        selectJunctionColor.addActionListener(e -> {
             clothSimulation.setJunctionColor(JColorChooser.showDialog(clothSimulation, "Junction Color Picker", null));
         });
 
         //Action listener for opening the color picker for Connectors.
-        selectConnectorColor.addActionListener(e ->{
+        selectConnectorColor.addActionListener(e -> {
             clothSimulation.setConnectorColor(JColorChooser.showDialog(clothSimulation, "Connector Color Picker", null));
         });
 
@@ -133,8 +133,8 @@ public class Start{
 
         //Slider visuals
         setupSliderVisuals(windSlider, "Wind", 1, 0);
-        setupSliderVisuals(gravitySlider, "Gravity", 1, (int)(clothSimulation.cloth.getGravityStrength()*10));
-        setupSliderVisuals(dampeningSlider, "Dampening", 10, (int)(clothSimulation.cloth.getDampeningCoeff()*100));
+        setupSliderVisuals(gravitySlider, "Gravity", 1, (int) (clothSimulation.cloth.getGravityStrength() * 10));
+        setupSliderVisuals(dampeningSlider, "Dampening", 10, (int) (clothSimulation.cloth.getDampeningCoeff() * 100));
 
         //Slider Text
         setupSliderTextVisuals(windText);
@@ -153,7 +153,7 @@ public class Start{
         options.setBackground(Color.BLACK);
 
         //Sets the layout of the options' menu.
-        options.setLayout(new GridLayout(6,2));
+        options.setLayout(new GridLayout(6, 2));
 
         //Adds all the options to the options JPanel.
         options.add(windText);
@@ -182,12 +182,12 @@ public class Start{
     /**
      * Method to setup all the visual elements of a JSlider.
      *
-     * @param slider - The given JSlider.
-     * @param name - The name of the JSlider.
-     * @param tickSpacing - The interval spacing.
+     * @param slider       - The given JSlider.
+     * @param name         - The name of the JSlider.
+     * @param tickSpacing  - The interval spacing.
      * @param initialValue - The initial value of the JSlider.
      */
-    public void setupSliderVisuals(JSlider slider, String name, int tickSpacing, int initialValue){
+    public void setupSliderVisuals(JSlider slider, String name, int tickSpacing, int initialValue) {
         slider.setMajorTickSpacing(tickSpacing);
         slider.setPaintTicks(true);
         slider.setPaintLabels(true);
@@ -213,7 +213,7 @@ public class Start{
      *
      * @param label - The given JLabel.
      */
-    public void setupSliderTextVisuals(JLabel label){
+    public void setupSliderTextVisuals(JLabel label) {
         label.setFont(new Font("ClearSans", Font.BOLD, 20));
         label.setBackground(Color.BLACK);
         label.setForeground(Color.WHITE);
@@ -225,7 +225,7 @@ public class Start{
      *
      * @param button - The given JButton.
      */
-    public void setupButtonVisuals(JButton button){
+    public void setupButtonVisuals(JButton button) {
         button.setFont(new Font("ClearSans", Font.BOLD, 20));
         button.setBackground(Color.BLACK);
         button.setForeground(Color.WHITE);
