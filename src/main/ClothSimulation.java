@@ -202,7 +202,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
                     color = validateColorBounds(color);
 
                     //Sets grayscale color
-                    g.setColor(new Color(0, 0, color));
+                    g.setColor(new Color(color, color, color));
 
                     //Draws polygon
                     g.fillPolygon(allX, allY, 4);
@@ -231,6 +231,9 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
     }
 
     public boolean junctionConnectedToJunction(Junction junction1, Junction junction2) {
+        if(junction1 == null || junction2 == null){
+            return false;
+        }
         for (Connector connector : junction1.getRelatedConnectors()) {
             if (connector.getStartJunction().equals(junction2) || connector.getEndJunction().equals(junction2)) {
                 return true;
@@ -352,11 +355,6 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         else{
             //slice through connectors
         }
-    }
-
-    public boolean lineIntersectsLine(double x1, double y1, double x2, double y2){
-
-        return false;
     }
 
     /**

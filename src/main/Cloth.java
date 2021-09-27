@@ -22,7 +22,7 @@ public class Cloth {
     //Delta Time
     private double dT;
     //The maximum stress of a given Junction.
-    private double maxStress = 1000;
+    private double maxStress = 250;
 
     /**
      * Initialization of the Cloth.
@@ -53,11 +53,12 @@ public class Cloth {
         for (Junction junction : this.junctionsArrayList) {
 
             //Only if the JunctionState is normal.
-            if (junction.getJunctionState() == JunctionState.NORMAL) {
+            if (junction != null && junction.getJunctionState() == JunctionState.NORMAL) {
                 junction.update(dT);
             }
         }
-        removeBrokenConnectors();
+        removeBrokenJunctions();
+        //removeBrokenConnectors(); still a bit broken for shading mode
     }
 
     /**
@@ -162,6 +163,8 @@ public class Cloth {
 
             if (connector.length > maxStress) {
                 connectors.remove(connector);
+                this.junctionsArrayList.set(this.junctionsArrayList.indexOf(connector.startJunction), null);
+                this.junctionsArrayList.set(this.junctionsArrayList.indexOf(connector.endJunction), null);
             }
         }
     }
