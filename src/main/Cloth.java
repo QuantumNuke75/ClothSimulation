@@ -19,6 +19,8 @@ public class Cloth {
     private float windStrengthX = 0.0f;
     private float gravityStrength = 0.3f;
     private float dampeningCoeff = 0.99f;
+    //Constantly changing variable
+    private float newWindStrengthX;
     //Delta Time
     private double dT;
     //The maximum stress of a given Junction.
@@ -45,6 +47,17 @@ public class Cloth {
      */
     public void updateCloth(double dT) {
         this.dT = dT;
+
+        //Update the wind
+        if(windStrengthX > 0){
+            newWindStrengthX = (float) ((windStrengthX + 0.05f*Math.sin(.001 * System.currentTimeMillis())) + 0.05);
+        }
+        else if (windStrengthX < 0){
+            newWindStrengthX = (float) ((windStrengthX - 0.05f*Math.sin(.001 * System.currentTimeMillis())) + 0.05);
+        }
+        else{
+            newWindStrengthX = 0;
+        }
 
         for (Connector connector : this.connectorArrayList) {
             connector.update(dT);
@@ -280,5 +293,13 @@ public class Cloth {
 
     public void setMaxStress(double maxStress) {
         this.maxStress = maxStress;
+    }
+
+    public float getNewWindStrengthX(){
+        return this.newWindStrengthX;
+    }
+
+    public void setNewWindStrengthX(float newWindStrengthX){
+        this.newWindStrengthX = newWindStrengthX;
     }
 }

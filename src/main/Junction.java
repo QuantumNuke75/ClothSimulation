@@ -48,7 +48,7 @@ public class Junction {
     public void update(double dT) {
         if (this.junctionState == JunctionState.NORMAL) {
             //Calculates new position.
-            double tempX = this.currentX + this.cloth.getDampeningCoeff() * ((this.currentX - this.previousX) + 0.5 * this.cloth.getWindStrengthX() * dT * dT);
+            double tempX = this.currentX + this.cloth.getDampeningCoeff() * ((this.currentX - this.previousX) + 0.5 * this.cloth.getNewWindStrengthX() * dT * dT);
             double tempY = this.currentY + this.cloth.getDampeningCoeff() * ((this.currentY - this.previousY) + 0.5 * this.cloth.getGravityStrength() * dT * dT);
 
             //Set previous coordinates.
