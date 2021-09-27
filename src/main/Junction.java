@@ -17,7 +17,7 @@ public class Junction {
     private double ax;
     private double ay;
     //The current state of the particle
-    private JunctionState junctionState = null;
+    private JunctionState junctionState;
 
     //An {@link ArrayList} of all the connected Connectors.
     private ArrayList<Connector> relatedConnectors = new ArrayList<>();
@@ -28,7 +28,7 @@ public class Junction {
      * @param y             - The given y position of the Junction.
      * @param junctionState - The given state of the particle.
      */
-    public Junction(Cloth cloth, double x, double y, int index, JunctionState junctionState) {
+    public Junction(Cloth cloth, double x, double y, JunctionState junctionState) {
         this.cloth = cloth;
         this.currentX = x;
         this.previousX = x;

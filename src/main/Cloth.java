@@ -68,7 +68,7 @@ public class Cloth {
         for (int i = 0; i < this.junctionCountX * this.junctionCountY; i++) {
             int row = getRowFromNumber(i);
             int col = getColFromNumber(i);
-            this.junctionsArrayList.add(new Junction(this, this.startJunctionX + (this.junctionDistance * row), this.startJunctionY + (this.junctionDistance * col), i,
+            this.junctionsArrayList.add(new Junction(this, this.startJunctionX + (this.junctionDistance * row), this.startJunctionY + (this.junctionDistance * col),
                     (col == 0 && (row == 0 || row == this.junctionCountY - 1 || row == this.junctionCountY / 2)) || (col == this.junctionCountX - 1 && (row == 0 || row == this.junctionCountY - 1)) ? JunctionState.ANCHOR : JunctionState.NORMAL));
         }
     }
@@ -133,7 +133,7 @@ public class Cloth {
                 for (Connector relatedConnector : junction.getRelatedConnectors()) {
 
                     //Create a replacement Junction for every related Connector.
-                    Junction replacementJunction = new Junction(this, junction.getCurrentX(), junction.getCurrentY(), this.junctionsArrayList.size(), JunctionState.NORMAL);
+                    Junction replacementJunction = new Junction(this, junction.getCurrentX(), junction.getCurrentY(), JunctionState.NORMAL);
 
                     //Replace the end Junction if the Junctions are equal.
                     if (relatedConnector.getJunctionB().equals(junction)) {
@@ -170,8 +170,8 @@ public class Cloth {
 
                 //Create two new junction to add as an endpoint for the replacement connectors and sets
                 //the default length to half the length of the original connector
-                Junction junction1 = new Junction(this, midX, midY, -1, JunctionState.NORMAL);
-                Junction junction2 = new Junction(this, midX, midY, -1, JunctionState.NORMAL);
+                Junction junction1 = new Junction(this, midX, midY, JunctionState.NORMAL);
+                Junction junction2 = new Junction(this, midX, midY, JunctionState.NORMAL);
 
                 //Adds the new junctions to the junction @link{ArrayList}
                 this.junctionsArrayList.add(junction1);

@@ -13,16 +13,16 @@ public class Connector {
     private final Cloth cloth;
 
     /**
-     * The construtor for a Connector.
+     * The constructor for a Connector.
      *
      * @param cloth {@link Cloth} - The Cloth instance.
-     * @param start - The associated "starting" Junction.
-     * @param end   - The associated "ending" Junction.
+     * @param junctionA - The associated first Junction.
+     * @param junctionB   - The associated last Junction.
      */
-    public Connector(Cloth cloth, Junction start, Junction end) {
+    public Connector(Cloth cloth, Junction junctionA, Junction junctionB) {
         this.cloth = cloth;
-        this.junctionA = start;
-        this.junctionB = end;
+        this.junctionA = junctionA;
+        this.junctionB = junctionB;
     }
 
     /**
