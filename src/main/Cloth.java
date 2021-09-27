@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 public class Cloth {
     //List of all Connectors.
-    ArrayList<Connector> connectors = new ArrayList<Connector>();
+    ArrayList<Connector> connectorArrayList = new ArrayList<>();
     //List of all Junctions.
-    ArrayList<Junction> junctionsArrayList = new ArrayList<Junction>();
+    ArrayList<Junction> junctionsArrayList = new ArrayList<>();
     //The distance between each Junction upon creation.
     private int junctionDistance = 20;
     //The number of Junction on each axis.
@@ -22,7 +22,7 @@ public class Cloth {
     //Delta Time
     private double dT;
     //The maximum stress of a given Junction.
-    private double maxStress = 250;
+    private double maxStress = 225;
 
     /**
      * Initialization of the Cloth.
@@ -46,7 +46,7 @@ public class Cloth {
     public void updateCloth(double dT) {
         this.dT = dT;
 
-        for (Connector connector : this.connectors) {
+        for (Connector connector : this.connectorArrayList) {
             connector.update(dT);
         }
 
@@ -57,8 +57,8 @@ public class Cloth {
                 junction.update(dT);
             }
         }
-        removeBrokenJunctions();
-        //removeBrokenConnectors(); still a bit broken for shading mode
+        //removeBrokenJunctions();
+        removeBrokenConnectors(); //still a bit broken for shading mode
     }
 
     /**
@@ -104,13 +104,13 @@ public class Cloth {
 
             if (getRowFromNumber(i) != this.junctionCountY - 1) {
                 Connector connector = new Connector(this, currentJunction, (Junction) this.junctionsArrayList.toArray()[i + this.junctionCountY]);
-                this.connectors.add(connector);
+                this.connectorArrayList.add(connector);
                 currentJunction.getRelatedConnectors().add(connector);
                 ((Junction) this.junctionsArrayList.toArray()[i + this.junctionCountY]).getRelatedConnectors().add(connector);
             }
             if (getColFromNumber(i) != this.junctionCountX - 1) {
                 Connector connector = new Connector(this, currentJunction, (Junction) this.junctionsArrayList.toArray()[i + 1]);
-                this.connectors.add(connector);
+                this.connectorArrayList.add(connector);
                 currentJunction.getRelatedConnectors().add(connector);
                 ((Junction) this.junctionsArrayList.toArray()[i + 1]).getRelatedConnectors().add(connector);
             }
@@ -136,13 +136,13 @@ public class Cloth {
                     Junction replacementJunction = new Junction(this, junction.getCurrentX(), junction.getCurrentY(), this.junctionsArrayList.size(), JunctionState.NORMAL);
 
                     //Replace the end Junction if the Junctions are equal.
-                    if (relatedConnector.getEndJunction().equals(junction)) {
-                        relatedConnector.setEndJunction(replacementJunction);
+                    if (relatedConnector.getJunctionB().equals(junction)) {
+                        relatedConnector.setJunctionB(replacementJunction);
                         this.junctionsArrayList.add(replacementJunction);
                     }
                     //Replace the start Junction if the Junctions are equal.
                     else {
-                        relatedConnector.setStartJunction(replacementJunction);
+                        relatedConnector.setJunctionA(replacementJunction);
                         this.junctionsArrayList.add(replacementJunction);
                     }
                 }
@@ -158,13 +158,35 @@ public class Cloth {
     public void removeBrokenConnectors() {
 
         //Loop through all Junction without running into a {@link java.util.ConcurrentModificationException}
-        for (Object o : this.connectors.toArray()) {
+        for (Object o : this.connectorArrayList.toArray()) {
             Connector connector = (Connector) o;
 
             if (connector.length > maxStress) {
-                connectors.remove(connector);
-                this.junctionsArrayList.set(this.junctionsArrayList.indexOf(connector.startJunction), null);
-                this.junctionsArrayList.set(this.junctionsArrayList.indexOf(connector.endJunction), null);
+                connectorArrayList.remove(connector);
+
+                //Get midpoint of broken connector
+                double midX = (connector.junctionA.getCurrentX() + connector.junctionB.getCurrentX())/2;
+                double midY = (connector.junctionA.getCurrentY() + connector.junctionB.getCurrentY())/2;
+
+                //Create two new junction to add as an endpoint for the replacement connectors and sets
+                //the default length to half the length of the original connector
+                Junction junction1 = new Junction(this, midX, midY, -1, JunctionState.NORMAL);
+                Junction junction2 = new Junction(this, midX, midY, -1, JunctionState.NORMAL);
+
+                //Adds the new junctions to the junction @link{ArrayList}
+                this.junctionsArrayList.add(junction1);
+                this.junctionsArrayList.add(junction2);
+
+                //Creates two new connectors as replacements for the broken connector
+                Connector connector1 = new Connector(this, connector.junctionA, junction1);
+                Connector connector2 = new Connector(this, connector.junctionB, junction2);
+
+                //Adds the new connectors to the connector @link{ArrayList}
+                this.connectorArrayList.add(connector1);
+                this.connectorArrayList.add(connector2);
+
+                connector.junctionA.getRelatedConnectors().remove(connector);
+                connector.junctionB.getRelatedConnectors().remove(connector);
             }
         }
     }
@@ -244,12 +266,12 @@ public class Cloth {
         this.dT = dT;
     }
 
-    public ArrayList<Connector> getConnectors() {
-        return this.connectors;
+    public ArrayList<Connector> getConnectorArrayList() {
+        return this.connectorArrayList;
     }
 
-    public void setConnectors(ArrayList<Connector> connectors) {
-        this.connectors = connectors;
+    public void setConnectorArrayList(ArrayList<Connector> connectorArrayList) {
+        this.connectorArrayList = connectorArrayList;
     }
 
     public double getMaxStress() {

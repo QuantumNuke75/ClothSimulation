@@ -97,7 +97,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
 
         //If the option drawConnectors in enabled.
         if (this.drawConnectors) {
-            for (Connector connector : this.cloth.connectors) {
+            for (Connector connector : this.cloth.connectorArrayList) {
 
                 //Set the width of the line used to draw Connectors.
                 g.setStroke(new BasicStroke(2));
@@ -119,10 +119,10 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
                     g.setColor(this.connectorColor);
                 }
                 //The Screen Space coordinates of the start Junction.
-                int[] drawCoordinatesStart = convertSimulationCoordsToScreenSpaceCoords((int) connector.getStartJunction().getCurrentX(), (int) connector.getStartJunction().getCurrentY());
+                int[] drawCoordinatesStart = convertSimulationCoordsToScreenSpaceCoords((int) connector.getJunctionA().getCurrentX(), (int) connector.getJunctionA().getCurrentY());
 
                 //The Screen Space coordinates of the end Junction.
-                int[] drawCoordinatesEnd = convertSimulationCoordsToScreenSpaceCoords((int) connector.getEndJunction().getCurrentX(), (int) connector.getEndJunction().getCurrentY());
+                int[] drawCoordinatesEnd = convertSimulationCoordsToScreenSpaceCoords((int) connector.getJunctionB().getCurrentX(), (int) connector.getJunctionB().getCurrentY());
 
                 //Draw the Connector with the given coordinates.
                 g.drawLine(drawCoordinatesStart[0] + (this.getWidth() - thousandCoordinates[0]) / 2, drawCoordinatesStart[1] + (this.getHeight() - thousandCoordinates[1]) / 2, drawCoordinatesEnd[0] + (this.getWidth() - thousandCoordinates[0]) / 2, drawCoordinatesEnd[1] + (this.getHeight() - thousandCoordinates[1]) / 2);
@@ -132,6 +132,12 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         //Drawing every Junction.
         if (this.drawJunction) {
             for (Junction junction : this.cloth.junctionsArrayList) {
+
+                //Check if the junction is null, if so, continue
+                if(junction == null){
+                    continue;
+                }
+
                 //Set the color to be drawn to the default color.
                 g.setColor(this.junctionColor);
 
@@ -235,7 +241,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
             return false;
         }
         for (Connector connector : junction1.getRelatedConnectors()) {
-            if (connector.getStartJunction().equals(junction2) || connector.getEndJunction().equals(junction2)) {
+            if (connector.getJunctionA().equals(junction2) || connector.getJunctionB().equals(junction2)) {
                 return true;
             }
         }
@@ -327,6 +333,11 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         Rectangle selectionBoxSimulation = new Rectangle(x - 5, y - 5, 10, 10);
         for (Junction junction : this.cloth.junctionsArrayList) {
 
+            //Check if the junction is null, if so, continue
+            if(junction == null){
+                continue;
+            }
+
             //The coordinates of the Junction converted from simulation coordinates to the Screen Space coordinates.
             int[] simulationCoords = convertSimulationCoordsToScreenSpaceCoords((int) junction.getCurrentX(), (int) junction.getCurrentY());
 
@@ -382,6 +393,11 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
 
         Rectangle selectionBoxSimulation = new Rectangle(x - 5, y - 5, 10, 10);
         for (Junction junction : this.cloth.junctionsArrayList) {
+
+            //Check if the junction is null, if so, continue
+            if(junction == null){
+                continue;
+            }
 
             //The coordinates of the Junction converted from simulation coordinates to the Screen Space coordinates.
             int[] simulationCoords = convertSimulationCoordsToScreenSpaceCoords((int) junction.getCurrentX(), (int) junction.getCurrentY());

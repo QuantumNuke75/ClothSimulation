@@ -1,13 +1,14 @@
 package main;
 
-import java.util.Arrays;
-
 public class Connector {
 
-    Junction startJunction;
-    Junction endJunction;
+    //First junction
+    Junction junctionA;
+    //End junction
+    Junction junctionB;
     Double length;
     Double normalLength = 20.0;
+
     //The instance of the cloth.
     private final Cloth cloth;
 
@@ -20,8 +21,8 @@ public class Connector {
      */
     public Connector(Cloth cloth, Junction start, Junction end) {
         this.cloth = cloth;
-        this.startJunction = start;
-        this.endJunction = end;
+        this.junctionA = start;
+        this.junctionB = end;
     }
 
     /**
@@ -29,7 +30,7 @@ public class Connector {
      */
     public double recalculateLength() {
         //Sets this length to the calculated length between the two Junctions.
-        this.length = Math.pow(Math.pow(endJunction.getCurrentX() - startJunction.getCurrentX(), 2) + Math.pow(endJunction.getCurrentY() - startJunction.getCurrentY(), 2), 0.5);
+        this.length = Math.pow(Math.pow(junctionB.getCurrentX() - junctionA.getCurrentX(), 2) + Math.pow(junctionB.getCurrentY() - junctionA.getCurrentY(), 2), 0.5);
         return this.length;
     }
 
@@ -38,8 +39,8 @@ public class Connector {
      */
     public void update(double dT) {
 
-        double differenceX = this.startJunction.getCurrentX() - this.endJunction.getCurrentX();
-        double differenceY = this.startJunction.getCurrentY() - this.endJunction.getCurrentY();
+        double differenceX = this.junctionA.getCurrentX() - this.junctionB.getCurrentX();
+        double differenceY = this.junctionA.getCurrentY() - this.junctionB.getCurrentY();
 
         this.recalculateLength();
         double difference = (this.normalLength - this.length) / this.length;
@@ -47,14 +48,14 @@ public class Connector {
         double translationX = differenceX * difference * Math.pow(0.5, 2);
         double translationY = differenceY * difference * Math.pow(0.5, 2);
 
-        if (this.startJunction.getJunctionState() == JunctionState.NORMAL) {
-            this.startJunction.setCurrentX(this.startJunction.getCurrentX() + translationX);
-            this.startJunction.setCurrentY(this.startJunction.getCurrentY() + translationY);
+        if (this.junctionA.getJunctionState() == JunctionState.NORMAL) {
+            this.junctionA.setCurrentX(this.junctionA.getCurrentX() + translationX);
+            this.junctionA.setCurrentY(this.junctionA.getCurrentY() + translationY);
         }
 
-        if (this.endJunction.getJunctionState() == JunctionState.NORMAL) {
-            this.endJunction.setCurrentX(this.endJunction.getCurrentX() - translationX);
-            this.endJunction.setCurrentY(this.endJunction.getCurrentY() - translationY);
+        if (this.junctionB.getJunctionState() == JunctionState.NORMAL) {
+            this.junctionB.setCurrentX(this.junctionB.getCurrentX() - translationX);
+            this.junctionB.setCurrentY(this.junctionB.getCurrentY() - translationY);
         }
     }
 
@@ -62,20 +63,20 @@ public class Connector {
 	/**
 	 * Getters and Setters
 	 */
-    public Junction getStartJunction() {
-        return this.startJunction;
+    public Junction getJunctionA() {
+        return this.junctionA;
     }
 
-    public void setStartJunction(Junction startJunction) {
-        this.startJunction = startJunction;
+    public void setJunctionA(Junction junctionA) {
+        this.junctionA = junctionA;
     }
 
-    public Junction getEndJunction() {
-        return this.endJunction;
+    public Junction getJunctionB() {
+        return this.junctionB;
     }
 
-    public void setEndJunction(Junction endJunction) {
-        this.endJunction = endJunction;
+    public void setJunctionB(Junction junctionB) {
+        this.junctionB = junctionB;
     }
 
     public void setLength(Double length) {
