@@ -50,7 +50,7 @@ public class Cloth {
 
         //Update the wind
         if(windStrengthX > 0){
-            newWindStrengthX = (float) ((windStrengthX - 0.05f*Math.sin(.001 * System.currentTimeMillis())) + 0.05);
+            newWindStrengthX = (float) ((windStrengthX + 0.05f*Math.sin(.001 * System.currentTimeMillis())) + 0.05);
         }
         else if (windStrengthX < 0){
             newWindStrengthX = (float) ((windStrengthX - 0.05f*Math.sin(.001 * System.currentTimeMillis())) + 0.05);
