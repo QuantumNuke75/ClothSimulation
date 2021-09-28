@@ -50,7 +50,7 @@ public class Cloth {
 
         //Update the wind
         if(windStrengthX > 0){
-            newWindStrengthX = (float) ((windStrengthX + 0.05f*Math.sin(.001 * System.currentTimeMillis())) + 0.05);
+            newWindStrengthX = (float) ((windStrengthX - 0.05f*Math.sin(.001 * System.currentTimeMillis())) + 0.05);
         }
         else if (windStrengthX < 0){
             newWindStrengthX = (float) ((windStrengthX - 0.05f*Math.sin(.001 * System.currentTimeMillis())) + 0.05);
@@ -59,10 +59,12 @@ public class Cloth {
             newWindStrengthX = 0;
         }
 
+        //Update all the connectors
         for (Connector connector : this.connectorArrayList) {
             connector.update(dT);
         }
 
+        //Update all the junctions
         for (Junction junction : this.junctionsArrayList) {
 
             //Only if the JunctionState is normal.
@@ -192,7 +194,11 @@ public class Cloth {
 
                 //Creates two new connectors as replacements for the broken connector
                 Connector connector1 = new Connector(this, connector.junctionA, junction1);
+                connector1.setNormalLength(connector1.normalLength/2);
+                connector1.setLength(connector1.normalLength);
                 Connector connector2 = new Connector(this, connector.junctionB, junction2);
+				connector2.setNormalLength(connector2.normalLength/2);
+				connector2.setLength(connector2.normalLength);
 
                 //Adds the new connectors to the connector @link{ArrayList}
                 this.connectorArrayList.add(connector1);

@@ -106,7 +106,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
                 if (this.showStress) {
                     //Red and green RBG values based on length of the Connector.
                     int red = (int) (255 * (1 - connector.recalculateLength() / 75));
-                    int green = (int) (255 * (1 - connector.recalculateLength() / 75));
+                    int green = (int) (200 * (1 - connector.recalculateLength() / 75));
 
                     //Validate the bounds of the red and green RBG values.
                     red = validateColorBounds(red);
