@@ -47,24 +47,46 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         addMouseMotionListener(this);
     }
 
+
+    //Inner class for purposes of splitting drawing onto a different thread
+    class PaintThread extends Thread{
+        @Override
+        public void run() {
+            while(true){
+                Start.INSTANCE.clothSimulation.repaint();
+                try {
+                    Thread.sleep(15);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    //Inner class for purposes of splitting calculations onto a different thread
+    class CalculationThread extends Thread{
+        @Override
+        public void run() {
+            while(true){
+                Start.INSTANCE.clothSimulation.cloth.updateCloth(0.97);
+                try {
+                    Thread.sleep(15);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     /**
      * The simulation's loop.
      */
     public void run() {
-        while (true) {
-            //Updates the Cloth instance.
-            this.cloth.updateCloth(0.97);
+        Thread paintThread = new PaintThread();
+        paintThread.start();
 
-            //Redraws everything needed to be drawn by the simulation.
-            this.repaint();
-
-            try {
-                //Delays the program's next loop
-                Thread.sleep(15);
-            } catch (Exception e) {
-
-            }
-        }
+        Thread calculationThread = new CalculationThread();
+        calculationThread.start();
     }
 
     /**
