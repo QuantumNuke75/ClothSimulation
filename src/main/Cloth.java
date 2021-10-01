@@ -1,6 +1,8 @@
 package main;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Cloth {
     //List of all Connectors.
@@ -59,19 +61,20 @@ public class Cloth {
             newWindStrengthX = 0;
         }
 
-        //Update all the connectors
+        //Update all the connectors in order
         for (Connector connector : this.connectorArrayList) {
             connector.update(dT);
         }
 
-        //Update all the junctions
+        //Update all the junctions in order
         for (Junction junction : this.junctionsArrayList) {
-
             //Only if the JunctionState is normal.
             if (junction != null && junction.getJunctionState() == JunctionState.NORMAL) {
                 junction.update(dT);
             }
         }
+
+        //Methods for breaking the cloth
         //removeBrokenJunctions();
         removeBrokenConnectors(); //still a bit broken for shading mode
     }
@@ -193,6 +196,8 @@ public class Cloth {
                 this.junctionsArrayList.add(junction2);
 
                 //Creates two new connectors as replacements for the broken connector
+                //Also sets the length of the new connectors to half that of the broken connector
+                // in order to simulate tearing
                 Connector connector1 = new Connector(this, connector.junctionA, junction1);
                 connector1.setNormalLength(connector1.normalLength/2);
                 connector1.setLength(connector1.normalLength);

@@ -68,7 +68,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         @Override
         public void run() {
             while(true){
-                Start.INSTANCE.clothSimulation.cloth.updateCloth(0.97);
+                Start.INSTANCE.clothSimulation.cloth.updateCloth(0.98);
                 try {
                     Thread.sleep(15);
                 } catch (InterruptedException e) {
@@ -82,9 +82,11 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
      * The simulation's loop.
      */
     public void run() {
+        //Create and start a new PaintThread
         Thread paintThread = new PaintThread();
         paintThread.start();
 
+        //Create and start and new CalculationThread
         Thread calculationThread = new CalculationThread();
         calculationThread.start();
     }
