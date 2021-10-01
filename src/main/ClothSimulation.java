@@ -53,12 +53,15 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         @Override
         public void run() {
             while(true){
+                long firstTime = System.currentTimeMillis();
                 Start.INSTANCE.clothSimulation.repaint();
                 try {
                     Thread.sleep(15);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                long secondTime = System.currentTimeMillis();
+                System.out.println("Draw took: " + (secondTime - firstTime) + " ms");
             }
         }
     }
@@ -68,12 +71,16 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         @Override
         public void run() {
             while(true){
+                long firstTime = System.currentTimeMillis();
                 Start.INSTANCE.clothSimulation.cloth.updateCloth(0.98);
                 try {
                     Thread.sleep(15);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                long secondTime = System.currentTimeMillis();
+                System.out.println("Step took: " + (secondTime - firstTime) + " ms");
+                System.out.println("Calculation per Second: " +  1000.0/(secondTime - firstTime));
             }
         }
     }
@@ -121,7 +128,8 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
 
         //If the option drawConnectors in enabled.
         if (this.drawConnectors) {
-            for (Connector connector : this.cloth.connectorArrayList) {
+            for (Object o : this.cloth.connectorArrayList.toArray()) {
+                Connector connector = (Connector)o;
 
                 //Set the width of the line used to draw Connectors.
                 g.setStroke(new BasicStroke(2));
@@ -155,7 +163,8 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
 
         //Drawing every Junction.
         if (this.drawJunction) {
-            for (Junction junction : this.cloth.junctionsArrayList) {
+            for (Object o : this.cloth.junctionsArrayList.toArray()) {
+                Junction junction = (Junction)o;
 
                 //Check if the junction is null, if so, continue
                 if(junction == null){
@@ -355,7 +364,8 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
 //        System.out.println("Sim to SS: " + simtoSS[0] + (this.getWidth() - thousandCoords[0])/2 + ", " + simtoSS[1] + (this.getHeight() - thousandCoords[1])/2);
         //Create a Rectangle for use in determining whether the mouse is dragging an object or not.
         Rectangle selectionBoxSimulation = new Rectangle(x - 5, y - 5, 10, 10);
-        for (Junction junction : this.cloth.junctionsArrayList) {
+        for (Object o : this.cloth.junctionsArrayList.toArray()) {
+            Junction junction = (Junction)o;
 
             //Check if the junction is null, if so, continue
             if(junction == null){
@@ -416,7 +426,8 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         int y = e.getY();
 
         Rectangle selectionBoxSimulation = new Rectangle(x - 5, y - 5, 10, 10);
-        for (Junction junction : this.cloth.junctionsArrayList) {
+        for (Object o : this.cloth.junctionsArrayList.toArray()) {
+            Junction junction = (Junction)o;
 
             //Check if the junction is null, if so, continue
             if(junction == null){

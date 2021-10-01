@@ -22,9 +22,11 @@ public class Start {
     JSlider windSlider = new JSlider(-10, 10);
     JSlider gravitySlider = new JSlider(-10, 10);
     JSlider dampeningSlider = new JSlider(0, 100);
+    JSlider maxStressSlider = new JSlider(0, 1000);
     JLabel windText = new JLabel("Wind", SwingConstants.CENTER);
     JLabel gravityText = new JLabel("Gravity", SwingConstants.CENTER);
     JLabel dampeningText = new JLabel("Dampening", SwingConstants.CENTER);
+    JLabel maxStressText = new JLabel("Max Stress", SwingConstants.CENTER);
 
     JButton toggleShowJunctions = new JButton("Show Junctions: Off");
     JButton toggleShowConnectors = new JButton("Show Connectors: Off");
@@ -91,6 +93,10 @@ public class Start {
             clothSimulation.cloth.setDampeningCoeff(dampeningSlider.getValue() / 100f);
         });
 
+        maxStressSlider.addChangeListener(e -> {
+            clothSimulation.cloth.setMaxStress(maxStressSlider.getValue());
+        });
+
         //Change listener for Junction show toggle
         toggleShowJunctions.addActionListener(e -> {
             clothSimulation.setDrawJunction(!clothSimulation.isDrawJunction());
@@ -135,11 +141,13 @@ public class Start {
         setupSliderVisuals(windSlider, "Wind", 1, 0);
         setupSliderVisuals(gravitySlider, "Gravity", 1, (int) (clothSimulation.cloth.getGravityStrength() * 10));
         setupSliderVisuals(dampeningSlider, "Dampening", 10, (int) (clothSimulation.cloth.getDampeningCoeff() * 100));
+        setupSliderVisuals(maxStressSlider, "Max Stress", 100, (int) (clothSimulation.cloth.getMaxStress()));
 
         //Slider Text
         setupSliderTextVisuals(windText);
         setupSliderTextVisuals(gravityText);
         setupSliderTextVisuals(dampeningText);
+        setupSliderTextVisuals(maxStressText);
 
         //Button visuals
         setupButtonVisuals(toggleShowJunctions);
@@ -153,7 +161,7 @@ public class Start {
         options.setBackground(Color.BLACK);
 
         //Sets the layout of the options' menu.
-        options.setLayout(new GridLayout(6, 2));
+        options.setLayout(new GridLayout(7, 2));
 
         //Adds all the options to the options JPanel.
         options.add(windText);
@@ -162,6 +170,8 @@ public class Start {
         options.add(gravitySlider);
         options.add(dampeningText);
         options.add(dampeningSlider);
+        options.add(maxStressText);
+        options.add(maxStressSlider);
         options.add(toggleShowJunctions);
         options.add(toggleShowConnectors);
         options.add(toggleShowStress);
