@@ -6,7 +6,9 @@ public class Connector {
     Junction junctionA;
     //End junction
     Junction junctionB;
+    //Current length
     Double length;
+    //Normal length
     Double normalLength = 20.0;
 
     //The instance of the cloth.

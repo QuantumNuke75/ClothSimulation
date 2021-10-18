@@ -201,6 +201,7 @@ public class Cloth {
                 Connector connector1 = new Connector(this, connector.junctionA, junction1);
                 connector1.setNormalLength(connector1.normalLength/2);
                 connector1.setLength(connector1.normalLength);
+
                 Connector connector2 = new Connector(this, connector.junctionB, junction2);
 				connector2.setNormalLength(connector2.normalLength/2);
 				connector2.setLength(connector2.normalLength);

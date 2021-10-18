@@ -61,7 +61,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
                     e.printStackTrace();
                 }
                 long secondTime = System.currentTimeMillis();
-                System.out.println("Draw took: " + (secondTime - firstTime) + " ms");
+                //System.out.println("Draw took: " + (secondTime - firstTime) + " ms");
             }
         }
     }
@@ -80,7 +80,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
                 }
                 long secondTime = System.currentTimeMillis();
                 System.out.println("Step took: " + (secondTime - firstTime) + " ms");
-                System.out.println("Calculation per Second: " +  1000.0/(secondTime - firstTime));
+                System.out.println("Calculation per Second: " +  (int)(1000.0/(secondTime - firstTime)));
             }
         }
     }
