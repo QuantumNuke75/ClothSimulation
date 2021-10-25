@@ -1,31 +1,37 @@
 package main;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class Cloth {
     //List of all Connectors.
     ArrayList<Connector> connectorArrayList = new ArrayList<>();
+
     //List of all Junctions.
     ArrayList<Junction> junctionsArrayList = new ArrayList<>();
+
     //The distance between each Junction upon creation.
     private int junctionDistance = 20;
+
     //The number of Junction on each axis.
     private int junctionCountX;
     private int junctionCountY;
+
     //The starting coordinate of each axis of Junction.
     private int startJunctionX;
     private int startJunctionY = 50;
+
     //Acceleration altering variables.
     private float windStrengthX = 0.0f;
     private float gravityStrength = 0.3f;
     private float dampeningCoeff = 0.99f;
+
     //Constantly changing variable
     private float newWindStrengthX;
+
     //Delta Time
     private double dT;
-    //The maximum stress of a given Junction.
+
+    //The maximum stress of a given Junction or Connector
     private double maxStress = 225;
 
     /**
@@ -37,7 +43,7 @@ public class Cloth {
     public Cloth(int junctionCountX, int junctionCountY) {
         this.junctionCountX = junctionCountX;
         this.junctionCountY = junctionCountY;
-        startJunctionX = 500 - (junctionCountX * junctionDistance) / 2;
+        this.startJunctionX = 500 - (junctionCountX * this.junctionDistance) / 2;
         createJunctions();
         createConnectors();
     }
@@ -51,14 +57,12 @@ public class Cloth {
         this.dT = dT;
 
         //Update the wind
-        if(windStrengthX > 0){
-            newWindStrengthX = (float) ((windStrengthX + 0.05f*Math.sin(.001 * System.currentTimeMillis())) + 0.05);
-        }
-        else if (windStrengthX < 0){
-            newWindStrengthX = (float) ((windStrengthX - 0.05f*Math.sin(.001 * System.currentTimeMillis())) + 0.05);
-        }
-        else{
-            newWindStrengthX = 0;
+        if (this.windStrengthX > 0) {
+            this.newWindStrengthX = (float) ((this.windStrengthX + 0.05f * Math.sin(.001 * System.currentTimeMillis())) + 0.05);
+        } else if (windStrengthX < 0) {
+            this.newWindStrengthX = (float) ((this.windStrengthX - 0.05f * Math.sin(.001 * System.currentTimeMillis())) + 0.05);
+        } else {
+            this.newWindStrengthX = 0;
         }
 
         //Update all the connectors in order
@@ -166,7 +170,7 @@ public class Cloth {
                 }
                 //Remove stressed Junction from still being where it was.
                 junction.getRelatedConnectors().clear();
-			}
+            }
         }
     }
 
@@ -179,12 +183,12 @@ public class Cloth {
         for (Object o : this.connectorArrayList.toArray()) {
             Connector connector = (Connector) o;
 
-            if (connector.length > maxStress) {
-                connectorArrayList.remove(connector);
+            if (connector.length > this.maxStress) {
+                this.connectorArrayList.remove(connector);
 
                 //Get midpoint of broken connector
-                double midX = (connector.junctionA.getCurrentX() + connector.junctionB.getCurrentX())/2;
-                double midY = (connector.junctionA.getCurrentY() + connector.junctionB.getCurrentY())/2;
+                double midX = (connector.junctionA.getCurrentX() + connector.junctionB.getCurrentX()) / 2;
+                double midY = (connector.junctionA.getCurrentY() + connector.junctionB.getCurrentY()) / 2;
 
                 //Create two new junction to add as an endpoint for the replacement connectors and sets
                 //the default length to half the length of the original connector
@@ -199,12 +203,12 @@ public class Cloth {
                 //Also sets the length of the new connectors to half that of the broken connector
                 // in order to simulate tearing
                 Connector connector1 = new Connector(this, connector.junctionA, junction1);
-                connector1.setNormalLength(connector1.normalLength/2);
+                connector1.setNormalLength(connector1.normalLength / 2);
                 connector1.setLength(connector1.normalLength);
 
                 Connector connector2 = new Connector(this, connector.junctionB, junction2);
-				connector2.setNormalLength(connector2.normalLength/2);
-				connector2.setLength(connector2.normalLength);
+                connector2.setNormalLength(connector2.normalLength / 2);
+                connector2.setLength(connector2.normalLength);
 
                 //Adds the new connectors to the connector @link{ArrayList}
                 this.connectorArrayList.add(connector1);
@@ -216,9 +220,9 @@ public class Cloth {
         }
     }
 
-	/**
-	 * Getters and Setters
-	 */
+    /**
+     * Getters and Setters
+     */
     public int getJunctionDistance() {
         return this.junctionDistance;
     }
@@ -307,11 +311,11 @@ public class Cloth {
         this.maxStress = maxStress;
     }
 
-    public float getNewWindStrengthX(){
+    public float getNewWindStrengthX() {
         return this.newWindStrengthX;
     }
 
-    public void setNewWindStrengthX(float newWindStrengthX){
+    public void setNewWindStrengthX(float newWindStrengthX) {
         this.newWindStrengthX = newWindStrengthX;
     }
 }

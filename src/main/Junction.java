@@ -6,16 +6,20 @@ public class Junction {
 
     //The total stress of the Junction.
     public float totalStress;
+
     //The instance of the cloth.
     private Cloth cloth;
+
     //Position related variables.
     private double currentX;
     private double currentY;
     private double previousX;
     private double previousY;
+
     //Acceleration Related Variables
     private double ax;
     private double ay;
+
     //The current state of the particle
     private JunctionState junctionState;
 
@@ -62,18 +66,22 @@ public class Junction {
             //Check for out of bounds on the y-axis.
             if (this.currentY > 1000) {
                 this.currentY = 1000;
-            } else if (this.currentY < 0) {
+            }
+            else if (this.currentY < 0) {
                 this.currentY = 0;
             }
 
             //Check for out of bounds on the x-axis.
             if (this.currentX > 1000) {
                 this.currentX = 1000;
-            } else if (this.currentX < 0) {
+            }
+            else if (this.currentX < 0) {
                 this.currentX = 0;
             }
 
+            //resets total stress in order to recalculate
             this.totalStress = 0;
+            //calculates total stress
             for (Connector connector : this.relatedConnectors) {
                 this.totalStress += connector.length;
             }

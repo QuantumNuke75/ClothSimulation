@@ -2,6 +2,8 @@ package main;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Dictionary;
 import java.util.Enumeration;
 
@@ -32,6 +34,8 @@ public class Start {
     JButton toggleShowConnectors = new JButton("Show Connectors: Off");
     JButton toggleShowStress = new JButton("Show Stress: Off");
     JButton toggleShading = new JButton("Show Shading: Off");
+
+    JButton startSimulation = new JButton("Start Simulation");
 
     JButton selectJunctionColor = new JButton("Junction Color Picker");
     JButton selectConnectorColor = new JButton("Connector Color Picker");
@@ -77,6 +81,15 @@ public class Start {
 
         //Creates a new instance of the ClothSimulation.
         clothSimulation = new ClothSimulation(junctionCountX, junctionCountY);
+
+        //Start simulation button
+        startSimulation.addActionListener(e -> {
+            this.clothSimulation.togglePause();
+            if(this.clothSimulation.isPaused)
+                startSimulation.setText("Unpause Simulation");
+            else
+                startSimulation.setText("Pause Simulation");
+        });
 
         //Change listener for Wind slider.
         windSlider.addChangeListener(e -> {
@@ -156,12 +169,13 @@ public class Start {
         setupButtonVisuals(toggleShading);
         setupButtonVisuals(selectJunctionColor);
         setupButtonVisuals(selectConnectorColor);
+        setupButtonVisuals(startSimulation);
 
         //Sets the background of the options JPanel to black
         options.setBackground(Color.BLACK);
 
         //Sets the layout of the options' menu.
-        options.setLayout(new GridLayout(7, 2));
+        options.setLayout(new GridLayout(8, 2));
 
         //Adds all the options to the options JPanel.
         options.add(windText);
@@ -178,6 +192,7 @@ public class Start {
         options.add(toggleShading);
         options.add(selectJunctionColor);
         options.add(selectConnectorColor);
+        options.add(startSimulation);
 
         //Pack the frame.
         frame.pack();

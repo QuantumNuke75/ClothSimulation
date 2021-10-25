@@ -2,6 +2,8 @@ package main;
 
 public class Connector {
 
+    //The instance of the cloth.
+    private final Cloth cloth;
     //First junction
     Junction junctionA;
     //End junction
@@ -11,15 +13,12 @@ public class Connector {
     //Normal length
     Double normalLength = 20.0;
 
-    //The instance of the cloth.
-    private final Cloth cloth;
-
     /**
      * The constructor for a Connector.
      *
-     * @param cloth {@link Cloth} - The Cloth instance.
+     * @param cloth     {@link Cloth} - The Cloth instance.
      * @param junctionA - The associated first Junction.
-     * @param junctionB   - The associated last Junction.
+     * @param junctionB - The associated last Junction.
      */
     public Connector(Cloth cloth, Junction junctionA, Junction junctionB) {
         this.cloth = cloth;
@@ -41,20 +40,27 @@ public class Connector {
      */
     public void update(double dT) {
 
+        //get difference between two junctions
         double differenceX = this.junctionA.getCurrentX() - this.junctionB.getCurrentX();
         double differenceY = this.junctionA.getCurrentY() - this.junctionB.getCurrentY();
 
+        //recalculate length
         this.recalculateLength();
+
+        //percent difference from normal length
         double difference = (this.normalLength - this.length) / this.length;
 
+        //calculate translation amount for junctions
         double translationX = differenceX * difference * Math.pow(0.5, 2);
         double translationY = differenceY * difference * Math.pow(0.5, 2);
 
+        //update the coordinates for one of the connected junctions if the junction is permitted to move
         if (this.junctionA.getJunctionState() == JunctionState.NORMAL) {
             this.junctionA.setCurrentX(this.junctionA.getCurrentX() + translationX);
             this.junctionA.setCurrentY(this.junctionA.getCurrentY() + translationY);
         }
 
+        //update the coordinates for one of the connected junctions if the junction is permitted to move
         if (this.junctionB.getJunctionState() == JunctionState.NORMAL) {
             this.junctionB.setCurrentX(this.junctionB.getCurrentX() - translationX);
             this.junctionB.setCurrentY(this.junctionB.getCurrentY() - translationY);
@@ -62,9 +68,9 @@ public class Connector {
     }
 
 
-	/**
-	 * Getters and Setters
-	 */
+    /**
+     * Getters and Setters
+     */
     public Junction getJunctionA() {
         return this.junctionA;
     }

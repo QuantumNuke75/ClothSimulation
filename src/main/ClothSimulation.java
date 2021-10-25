@@ -1,10 +1,15 @@
 package main;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
 
 public class ClothSimulation extends JPanel implements MouseListener, MouseMotionListener {
 
@@ -31,6 +36,14 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
     private Color junctionColor = Color.BLUE;
     private Color connectorColor = Color.GREEN;
 
+    //Image printing
+    String folder = UUID.randomUUID().toString();
+    int image_num = 0;
+
+    //Threads
+    Thread paintThread;
+    Thread calculationThread;
+    boolean isPaused = true;
 
     /**
      * The constructor. Creates a new Cloth instance and sets up listeners.
@@ -42,60 +55,30 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         super();
         this.junctionCountX = junctionCountX;
         this.junctionCountY = junctionCountY;
-        cloth = new Cloth(junctionCountX, junctionCountY);
+        this.cloth = new Cloth(junctionCountX, junctionCountY);
         addMouseListener(this);
         addMouseMotionListener(this);
-    }
-
-
-    //Inner class for purposes of splitting drawing onto a different thread
-    class PaintThread extends Thread{
-        @Override
-        public void run() {
-            while(true){
-                long firstTime = System.currentTimeMillis();
-                Start.INSTANCE.clothSimulation.repaint();
-                try {
-                    Thread.sleep(15);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                long secondTime = System.currentTimeMillis();
-                //System.out.println("Draw took: " + (secondTime - firstTime) + " ms");
-            }
-        }
-    }
-
-    //Inner class for purposes of splitting calculations onto a different thread
-    class CalculationThread extends Thread{
-        @Override
-        public void run() {
-            while(true){
-                long firstTime = System.currentTimeMillis();
-                Start.INSTANCE.clothSimulation.cloth.updateCloth(0.98);
-                try {
-                    Thread.sleep(15);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                long secondTime = System.currentTimeMillis();
-                System.out.println("Step took: " + (secondTime - firstTime) + " ms");
-                System.out.println("Calculation per Second: " +  (int)(1000.0/(secondTime - firstTime)));
-            }
-        }
     }
 
     /**
      * The simulation's loop.
      */
     public void run() {
+        //Create image directory
+        File file = new File("C:\\\\Users\\\\ethan\\\\OneDrive\\\\Desktop\\\\Cloth Simulation Images\\" + this.folder);
+        file.mkdir();
+
         //Create and start a new PaintThread
-        Thread paintThread = new PaintThread();
+        paintThread = new PaintThread();
         paintThread.start();
 
         //Create and start and new CalculationThread
-        Thread calculationThread = new CalculationThread();
+        calculationThread = new CalculationThread();
         calculationThread.start();
+    }
+
+    public void togglePause(){
+        this.isPaused = !this.isPaused;
     }
 
     /**
@@ -129,7 +112,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         //If the option drawConnectors in enabled.
         if (this.drawConnectors) {
             for (Object o : this.cloth.connectorArrayList.toArray()) {
-                Connector connector = (Connector)o;
+                Connector connector = (Connector) o;
 
                 //Set the width of the line used to draw Connectors.
                 g.setStroke(new BasicStroke(2));
@@ -164,10 +147,10 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         //Drawing every Junction.
         if (this.drawJunction) {
             for (Object o : this.cloth.junctionsArrayList.toArray()) {
-                Junction junction = (Junction)o;
+                Junction junction = (Junction) o;
 
                 //Check if the junction is null, if so, continue
-                if(junction == null){
+                if (junction == null) {
                     continue;
                 }
 
@@ -194,7 +177,6 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         }
     }
 
-
     /**
      * Colors in all the polygons contained within the Cloth.
      *
@@ -202,10 +184,10 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
      */
     public void colorAreas(Graphics2D g) {
 
-        for (int i = 0; i < junctionCountX * junctionCountY; i++) {
+        for (int i = 0; i < this.junctionCountX * this.junctionCountY; i++) {
 
             //If selected junction is not last row or column
-            if (getRowFromNumber(i) < junctionCountY - 1 && getColFromNumber(i) < junctionCountX - 1) {
+            if (getRowFromNumber(i) < this.junctionCountY - 1 && getColFromNumber(i) < this.junctionCountX - 1) {
 
                 Junction junction1 = this.cloth.junctionsArrayList.get(i);
                 Junction junction2 = this.cloth.junctionsArrayList.get(i + 1);
@@ -269,8 +251,11 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         return Math.abs(area / 2.0);
     }
 
+    /**
+     * Checks whether two junctions are directly connected to eachother.
+     */
     public boolean junctionConnectedToJunction(Junction junction1, Junction junction2) {
-        if(junction1 == null || junction2 == null){
+        if (junction1 == null || junction2 == null) {
             return false;
         }
         for (Connector connector : junction1.getRelatedConnectors()) {
@@ -362,13 +347,14 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
 //        System.out.println("SS Click to Sim: " + ssClicktoSim[0] + ", " + ssClicktoSim[1]);
 //        //When converting to ss coords, must add relative xoffset
 //        System.out.println("Sim to SS: " + simtoSS[0] + (this.getWidth() - thousandCoords[0])/2 + ", " + simtoSS[1] + (this.getHeight() - thousandCoords[1])/2);
+
         //Create a Rectangle for use in determining whether the mouse is dragging an object or not.
         Rectangle selectionBoxSimulation = new Rectangle(x - 5, y - 5, 10, 10);
         for (Object o : this.cloth.junctionsArrayList.toArray()) {
-            Junction junction = (Junction)o;
+            Junction junction = (Junction) o;
 
             //Check if the junction is null, if so, continue
-            if(junction == null){
+            if (junction == null) {
                 continue;
             }
 
@@ -396,8 +382,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
     public void mouseDragged(MouseEvent e) {
         if (!e.isShiftDown()) {
             this.isDragging = true;
-        }
-        else{
+        } else {
             //slice through connectors
         }
     }
@@ -427,10 +412,10 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
 
         Rectangle selectionBoxSimulation = new Rectangle(x - 5, y - 5, 10, 10);
         for (Object o : this.cloth.junctionsArrayList.toArray()) {
-            Junction junction = (Junction)o;
+            Junction junction = (Junction) o;
 
             //Check if the junction is null, if so, continue
-            if(junction == null){
+            if (junction == null) {
                 continue;
             }
 
@@ -453,6 +438,24 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
     }
 
     /**
+     * Save the image.
+     */
+    public void captureAndSaveImage(){
+        BufferedImage bi = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics g = bi.createGraphics();
+        this.print(g);
+        g.dispose();
+        try {
+            int[] thousandCoords = convertSimulationCoordsToScreenSpaceCoords(1000, 1000);
+            bi = bi.getSubimage((this.getWidth() - thousandCoords[0]) / 2, (this.getHeight() - thousandCoords[1]) / 2, thousandCoords[0], thousandCoords[1]);
+            ImageIO.write(bi, "png", new File("C:\\Users\\ethan\\OneDrive\\Desktop\\Cloth Simulation Images\\" + this.folder + "\\" + this.image_num + ".png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        image_num++;
+    }
+
+    /**
      * The overridden getPreferredSize method.
      *
      * @returns the preferred Dimension of this JPanel.
@@ -462,7 +465,9 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         return new Dimension(1000, 1000);
     }
 
-    //Unused functions.
+    /**
+     * Unused functions.
+     */
     public void mouseEntered(MouseEvent e) {
     }
 
@@ -476,7 +481,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
      * Getters and Setters
      */
     public boolean isDrawJunction() {
-        return drawJunction;
+        return this.drawJunction;
     }
 
     public void setDrawJunction(boolean drawJunction) {
@@ -484,7 +489,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
     }
 
     public boolean isDrawConnectors() {
-        return drawConnectors;
+        return this.drawConnectors;
     }
 
     public void setDrawConnectors(boolean drawConnectors) {
@@ -492,7 +497,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
     }
 
     public boolean isShowStress() {
-        return showStress;
+        return this.showStress;
     }
 
     public void setShowStress(boolean showStress) {
@@ -500,7 +505,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
     }
 
     public Color getJunctionColor() {
-        return junctionColor;
+        return this.junctionColor;
     }
 
     public void setJunctionColor(Color junctionColor) {
@@ -508,7 +513,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
     }
 
     public Color getConnectorColor() {
-        return connectorColor;
+        return this.connectorColor;
     }
 
     public void setConnectorColor(Color connectorColor) {
@@ -519,7 +524,61 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         return this.showShading;
     }
 
-    public void setShowShading(boolean showShading) {
-        this.showShading = showShading;
+    public void setShowShading(boolean showShading) {this.showShading = showShading;}
+
+    //Inner class for purposes of splitting drawing onto a different thread for timing purposes
+    class PaintThread extends Thread {
+        @Override
+        public void run() {
+            while (true) {
+                if(!Start.INSTANCE.clothSimulation.isPaused) {
+                    long firstTime = System.currentTimeMillis();
+                    Start.INSTANCE.clothSimulation.repaint();
+                    captureAndSaveImage();
+                    try {
+                        Thread.sleep(15);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    long secondTime = System.currentTimeMillis();
+                    //System.out.println("Draw took: " + (secondTime - firstTime) + " ms");
+                }
+                else{
+                    try {
+                        Thread.sleep(15);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    //Inner class for purposes of splitting calculations onto a different thread for timing purposes
+    class CalculationThread extends Thread {
+        @Override
+        public void run() {
+            while (true) {
+                if(!Start.INSTANCE.clothSimulation.isPaused) {
+                    long firstTime = System.currentTimeMillis();
+                    Start.INSTANCE.clothSimulation.cloth.updateCloth(0.98);
+                    try {
+                        Thread.sleep(15);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    long secondTime = System.currentTimeMillis();
+                    System.out.println("Step took: " + (secondTime - firstTime) + " ms");
+                    System.out.println("Calculation per Second: " + (int) (1000.0 / (secondTime - firstTime)));
+                }
+                else{
+                    try {
+                        Thread.sleep(15);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
     }
 }
