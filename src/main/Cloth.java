@@ -13,19 +13,8 @@ public class Cloth {
     private int startJunctionX;
     private int startJunctionY = 50;
 
-    //Acceleration altering variables.
-    private float windStrengthX = 0.0f;
-    private float gravityStrength = 0.3f;
-    private float dampeningCoeff = 0.99f;
-
-    //Constantly changing variable
-    private float newWindStrengthX;
-
     //Delta Time
     private double dT;
-
-    //The maximum stress of a given Junction or Connector
-    private double maxStress = 225;
 
     /**
      * Initialization of the Cloth.
@@ -45,12 +34,12 @@ public class Cloth {
         this.dT = dT;
 
         //Update the wind
-        if (this.windStrengthX > 0) {
-            this.newWindStrengthX = (float) ((this.windStrengthX + 0.05f * Math.sin(.001 * System.currentTimeMillis())) + 0.05);
-        } else if (windStrengthX < 0) {
-            this.newWindStrengthX = (float) ((this.windStrengthX - 0.05f * Math.sin(.001 * System.currentTimeMillis())) + 0.05);
+        if (Variables.windStrengthX > 0) {
+            Variables.newWindStrengthX = (float) ((Variables.windStrengthX + 0.05f * Math.sin(.001 * System.currentTimeMillis())) + 0.05);
+        } else if (Variables.windStrengthX < 0) {
+            Variables.newWindStrengthX = (float) ((Variables.windStrengthX - 0.05f * Math.sin(.001 * System.currentTimeMillis())) + 0.05);
         } else {
-            this.newWindStrengthX = 0;
+            Variables.newWindStrengthX = 0;
         }
 
         //Update all the connectors in order
@@ -137,7 +126,7 @@ public class Cloth {
             Junction junction = (Junction) o;
 
             //If the Junction's stress is greater that the permitted stress.
-            if (junction.totalStress > this.maxStress) {
+            if (junction.totalStress > Variables.maxStress) {
 
                 //For every related Connector to the Junction.
                 for (Connector relatedConnector : junction.getRelatedConnectors()) {
@@ -171,7 +160,7 @@ public class Cloth {
         for (Object o : this.connectorArrayList.toArray()) {
             Connector connector = (Connector) o;
 
-            if (connector.length > this.maxStress) {
+            if (connector.length > Variables.maxStress) {
                 this.connectorArrayList.remove(connector);
 
                 //Get midpoint of broken connector
@@ -227,30 +216,6 @@ public class Cloth {
         this.startJunctionY = startJunctionY;
     }
 
-    public float getWindStrengthX() {
-        return this.windStrengthX;
-    }
-
-    public void setWindStrengthX(float windStrengthX) {
-        this.windStrengthX = windStrengthX;
-    }
-
-    public float getGravityStrength() {
-        return this.gravityStrength;
-    }
-
-    public void setGravityStrength(float gravityStrength) {
-        this.gravityStrength = gravityStrength;
-    }
-
-    public float getDampeningCoeff() {
-        return this.dampeningCoeff;
-    }
-
-    public void setDampeningCoeff(float dampeningCoeff) {
-        this.dampeningCoeff = dampeningCoeff;
-    }
-
     public double getdT() {
         return this.dT;
     }
@@ -265,21 +230,5 @@ public class Cloth {
 
     public void setConnectorArrayList(ArrayList<Connector> connectorArrayList) {
         this.connectorArrayList = connectorArrayList;
-    }
-
-    public double getMaxStress() {
-        return this.maxStress;
-    }
-
-    public void setMaxStress(double maxStress) {
-        this.maxStress = maxStress;
-    }
-
-    public float getNewWindStrengthX() {
-        return this.newWindStrengthX;
-    }
-
-    public void setNewWindStrengthX(float newWindStrengthX) {
-        this.newWindStrengthX = newWindStrengthX;
     }
 }

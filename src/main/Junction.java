@@ -39,7 +39,7 @@ public class Junction {
         this.currentY = y;
         this.previousY = y;
         this.ax = 0;
-        this.ay = this.cloth.getGravityStrength();
+        this.ay = Variables.gravityStrength;
         this.junctionState = junctionState;
     }
 
@@ -52,8 +52,8 @@ public class Junction {
     public void update(double dT) {
         if (this.junctionState == JunctionState.NORMAL) {
             //Calculates new position.
-            double tempX = this.currentX + this.cloth.getDampeningCoeff() * ((this.currentX - this.previousX) + 0.5 * this.cloth.getNewWindStrengthX() * dT * dT);
-            double tempY = this.currentY + this.cloth.getDampeningCoeff() * ((this.currentY - this.previousY) + 0.5 * this.cloth.getGravityStrength() * dT * dT);
+            double tempX = this.currentX + Variables.dampeningCoeff * ((this.currentX - this.previousX) + 0.5 * Variables.newWindStrengthX * dT * dT);
+            double tempY = this.currentY + Variables.dampeningCoeff * ((this.currentY - this.previousY) + 0.5 * Variables.gravityStrength * dT * dT);
 
             //Set previous coordinates.
             this.previousX = this.currentX;
@@ -91,14 +91,6 @@ public class Junction {
     /**
      * Getters and Setters
      */
-    public Cloth getCloth() {
-        return this.cloth;
-    }
-
-    public void setCloth(Cloth cloth) {
-        this.cloth = cloth;
-    }
-
     public double getCurrentX() {
         return this.currentX;
     }

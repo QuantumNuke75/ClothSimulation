@@ -13,24 +13,11 @@ import java.util.UUID;
 
 public class ClothSimulation extends JPanel implements MouseListener, MouseMotionListener {
 
-    //Instance of the Cloth.
-    public Cloth cloth;
-
     //The Junction being dragged.
     public Junction junctionBeingDragged = null;
 
     //Whether a Junction is being dragged.
     public boolean isDragging = false;
-
-    //Settings
-    private boolean drawJunction = false;
-    private boolean drawConnectors = true;
-    private boolean showStress = true;
-    private boolean showShading = false;
-
-    //Default Color Settings
-    private Color junctionColor = Color.BLUE;
-    private Color connectorColor = Color.GREEN;
 
     //Image printing
     String folder = UUID.randomUUID().toString();
@@ -46,7 +33,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
      */
     public ClothSimulation() {
         super();
-        this.cloth = new Cloth();
+        Variables.cloth = new Cloth();
         addMouseListener(this);
         addMouseMotionListener(this);
     }
@@ -96,20 +83,20 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         g.drawLine(thousandCoordinates[0] + (this.getWidth() - thousandCoordinates[0]) / 2, thousandCoordinates[1], 0 + (this.getWidth() - thousandCoordinates[0]) / 2, thousandCoordinates[1]);
         g.drawLine(0 + (this.getWidth() - thousandCoordinates[0]) / 2, thousandCoordinates[1], (this.getWidth() - thousandCoordinates[0]) / 2, 0);
 
-        if (showShading) {
+        if (Variables.showShading) {
             colorAreas(g);
         }
 
         //If the option drawConnectors in enabled.
-        if (this.drawConnectors) {
-            for (Object o : this.cloth.connectorArrayList.toArray()) {
+        if (Variables.drawConnectors) {
+            for (Object o : Variables.cloth.connectorArrayList.toArray()) {
                 Connector connector = (Connector) o;
 
                 //Set the width of the line used to draw Connectors.
                 g.setStroke(new BasicStroke(2));
 
                 //If the option showStress is enabled.
-                if (this.showStress) {
+                if (Variables.showStress) {
                     //Red and green RBG values based on length of the Connector.
                     int red = (int) (255 * (1 - connector.recalculateLength() / 75));
                     int green = (int) (200 * (1 - connector.recalculateLength() / 75));
@@ -122,7 +109,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
                     g.setColor(new Color(255 - red, green, 0));
                 } else {
                     //Sets the color of the Connector to be drawn.
-                    g.setColor(this.connectorColor);
+                    g.setColor(Variables.connectorColor);
                 }
                 //The Screen Space coordinates of the start Junction.
                 int[] drawCoordinatesStart = convertSimulationCoordsToScreenSpaceCoords((int) connector.getJunctionA().getCurrentX(), (int) connector.getJunctionA().getCurrentY());
@@ -136,8 +123,8 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         }
 
         //Drawing every Junction.
-        if (this.drawJunction) {
-            for (Object o : this.cloth.junctionsArrayList.toArray()) {
+        if (Variables.drawJunction) {
+            for (Object o : Variables.cloth.junctionsArrayList.toArray()) {
                 Junction junction = (Junction) o;
 
                 //Check if the junction is null, if so, continue
@@ -146,7 +133,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
                 }
 
                 //Set the color to be drawn to the default color.
-                g.setColor(this.junctionColor);
+                g.setColor(Variables.junctionColor);
 
                 //Gets the Screen Space coordinates of the Junction.
                 int[] drawCoordinates = convertSimulationCoordsToScreenSpaceCoords((int) junction.getCurrentX(), (int) junction.getCurrentY());
@@ -180,10 +167,10 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
             //If selected junction is not last row or column
             if (getRowFromNumber(i) < Variables.JUNCTION_COUNT_Y - 1 && getColFromNumber(i) < Variables.JUNCTION_COUNT_X - 1) {
 
-                Junction junction1 = this.cloth.junctionsArrayList.get(i);
-                Junction junction2 = this.cloth.junctionsArrayList.get(i + 1);
-                Junction junction3 = this.cloth.junctionsArrayList.get(i + Variables.JUNCTION_COUNT_Y + 1);
-                Junction junction4 = this.cloth.junctionsArrayList.get(i + Variables.JUNCTION_COUNT_Y);
+                Junction junction1 = Variables.cloth.junctionsArrayList.get(i);
+                Junction junction2 = Variables.cloth.junctionsArrayList.get(i + 1);
+                Junction junction3 = Variables.cloth.junctionsArrayList.get(i + Variables.JUNCTION_COUNT_Y + 1);
+                Junction junction4 = Variables.cloth.junctionsArrayList.get(i + Variables.JUNCTION_COUNT_Y);
 
                 //If all Junctions form a valid area.
                 if (junctionConnectedToJunction(junction1, junction2) && junctionConnectedToJunction(junction2, junction3) && junctionConnectedToJunction(junction3, junction4) && junctionConnectedToJunction(junction4, junction1)) {
@@ -297,8 +284,8 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
      */
     public int[] convertSimulationCoordsToScreenSpaceCoords(int x, int y) {
         double preferredSize = Variables.SIMULATION_WIDTH;
-        int windowWidth = Start.INSTANCE.clothSimulation.getWidth();
-        int windowHeight = Start.INSTANCE.clothSimulation.getHeight();
+        int windowWidth = Variables.clothSimulation.getWidth();
+        int windowHeight = Variables.clothSimulation.getHeight();
         double scale = windowWidth >= windowHeight ? windowHeight / preferredSize : windowWidth / preferredSize;
 
         return new int[]{(int) (x * scale), (int) (y * scale)};
@@ -313,8 +300,8 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
      */
     public int[] convertScreenSpaceCoordsToSimulationCoords(int x, int y) {
         double preferredSize = Variables.SIMULATION_WIDTH;
-        int windowWidth = Start.INSTANCE.clothSimulation.getWidth();
-        int windowHeight = Start.INSTANCE.clothSimulation.getHeight();
+        int windowWidth = Variables.clothSimulation.getWidth();
+        int windowHeight = Variables.clothSimulation.getHeight();
         double scale = windowWidth >= windowHeight ? windowHeight / preferredSize : windowWidth / preferredSize;
 
         return new int[]{(int) (x / scale), (int) (y / scale)};
@@ -341,7 +328,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
 
         //Create a Rectangle for use in determining whether the mouse is dragging an object or not.
         Rectangle selectionBoxSimulation = new Rectangle(x - 5, y - 5, 10, 10);
-        for (Object o : this.cloth.junctionsArrayList.toArray()) {
+        for (Object o : Variables.cloth.junctionsArrayList.toArray()) {
             Junction junction = (Junction) o;
 
             //Check if the junction is null, if so, continue
@@ -402,7 +389,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         int y = e.getY();
 
         Rectangle selectionBoxSimulation = new Rectangle(x - 5, y - 5, 10, 10);
-        for (Object o : this.cloth.junctionsArrayList.toArray()) {
+        for (Object o : Variables.cloth.junctionsArrayList.toArray()) {
             Junction junction = (Junction) o;
 
             //Check if the junction is null, if so, continue
@@ -467,64 +454,14 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
 
     public void mouseMoved(MouseEvent e) {
     }
-
-    /**
-     * Getters and Setters
-     */
-    public boolean isDrawJunction() {
-        return this.drawJunction;
-    }
-
-    public void setDrawJunction(boolean drawJunction) {
-        this.drawJunction = drawJunction;
-    }
-
-    public boolean isDrawConnectors() {
-        return this.drawConnectors;
-    }
-
-    public void setDrawConnectors(boolean drawConnectors) {
-        this.drawConnectors = drawConnectors;
-    }
-
-    public boolean isShowStress() {
-        return this.showStress;
-    }
-
-    public void setShowStress(boolean showStress) {
-        this.showStress = showStress;
-    }
-
-    public Color getJunctionColor() {
-        return this.junctionColor;
-    }
-
-    public void setJunctionColor(Color junctionColor) {
-        this.junctionColor = junctionColor;
-    }
-
-    public Color getConnectorColor() {
-        return this.connectorColor;
-    }
-
-    public void setConnectorColor(Color connectorColor) {
-        this.connectorColor = connectorColor;
-    }
-
-    public boolean isShowShading() {
-        return this.showShading;
-    }
-
-    public void setShowShading(boolean showShading) {this.showShading = showShading;}
-
     //Inner class for purposes of splitting drawing onto a different thread for timing purposes
     class PaintThread extends Thread {
         @Override
         public void run() {
             while (true) {
-                if(!Start.INSTANCE.clothSimulation.isPaused) {
+                if(true){//!Variables.clothSimulation.isPaused) {
                     long firstTime = System.currentTimeMillis();
-                    Start.INSTANCE.clothSimulation.repaint();
+                    Variables.clothSimulation.repaint();
                     captureAndSaveImage();
                     try {
                         Thread.sleep(15);
@@ -550,9 +487,9 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         @Override
         public void run() {
             while (true) {
-                if(!Start.INSTANCE.clothSimulation.isPaused) {
+                if(!Variables.clothSimulation.isPaused) {
                     long firstTime = System.currentTimeMillis();
-                    Start.INSTANCE.clothSimulation.cloth.updateCloth(0.98);
+                    Variables.cloth.updateCloth(0.98);
                     try {
                         Thread.sleep(15);
                     } catch (InterruptedException e) {

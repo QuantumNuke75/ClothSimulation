@@ -6,15 +6,6 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 
 public class Start {
-
-    //Instance of this class.
-    public static Start INSTANCE;
-
-    //The instance of the ClothSimulation.
-    ClothSimulation clothSimulation;
-
-    //Swing components
-    JFrame frame;
     JSlider windSlider = new JSlider(-10, 10);
     JSlider gravitySlider = new JSlider(-10, 10);
     JSlider dampeningSlider = new JSlider(0, 100);
@@ -41,13 +32,13 @@ public class Start {
      */
     public static void main(String[] args) {
         //Creates a new static instance of the Start class.
-        Start.INSTANCE = new Start();
+        Variables.start = new Start();
 
         //Creates an instance of the ClothSimulation.
-        ClothSimulation simulation = Start.INSTANCE.createWindow(1000, 1000);
+        Variables.clothSimulation = Variables.start.createWindow(1000, 1000);
 
         //Begins the simulation.
-        simulation.run();
+        Variables.clothSimulation.run();
     }
 
     /**
@@ -59,27 +50,27 @@ public class Start {
      */
     public ClothSimulation createWindow(int width, int height) {
         //Create a new JFrame instance.
-        frame = new JFrame("Cloth Simulation");
+        Variables.window = new JFrame("Cloth Simulation");
 
         //Create a new JPanel instance for use in an options menu.
         JPanel options = new JPanel();
 
         //Sets the layout of the JFrame to a {@link BorderLayout}
-        frame.setLayout(new BorderLayout());
+        Variables.window.setLayout(new BorderLayout());
 
         //Sets the width and height of the JFrame
-        frame.setSize(width, height);
+        Variables.window.setSize(width, height);
 
         //Sets the default close operation for the JFrame
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        Variables.window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         //Creates a new instance of the ClothSimulation.
-        clothSimulation = new ClothSimulation();
+        Variables.clothSimulation = new ClothSimulation();
 
         //Start simulation button
         startSimulation.addActionListener(e -> {
-            this.clothSimulation.togglePause();
-            if(this.clothSimulation.isPaused)
+            Variables.clothSimulation.togglePause();
+            if(Variables.clothSimulation.isPaused)
                 startSimulation.setText("Unpause Simulation");
             else
                 startSimulation.setText("Pause Simulation");
@@ -87,68 +78,68 @@ public class Start {
 
         //Change listener for Wind slider.
         windSlider.addChangeListener(e -> {
-            clothSimulation.cloth.setWindStrengthX(windSlider.getValue() / 10f);
+            Variables.windStrengthX = windSlider.getValue() / 10f;
         });
 
         //Change listener for Gravity slider.
         gravitySlider.addChangeListener(e -> {
-            clothSimulation.cloth.setGravityStrength(gravitySlider.getValue() / 10f);
+            Variables.gravityStrength = gravitySlider.getValue() / 10f;
         });
 
         //Change listener for Dampening slider.
         dampeningSlider.addChangeListener(e -> {
-            clothSimulation.cloth.setDampeningCoeff(dampeningSlider.getValue() / 100f);
+            Variables.dampeningCoeff = dampeningSlider.getValue() / 100f;
         });
 
         maxStressSlider.addChangeListener(e -> {
-            clothSimulation.cloth.setMaxStress(maxStressSlider.getValue());
+            Variables.maxStress = maxStressSlider.getValue();
         });
 
         //Change listener for Junction show toggle
         toggleShowJunctions.addActionListener(e -> {
-            clothSimulation.setDrawJunction(!clothSimulation.isDrawJunction());
-            toggleShowJunctions.setText(("Show Junctions: " + (clothSimulation.isDrawJunction() ? "On" : "Off")));
+            Variables.drawJunction = !Variables.drawJunction;
+            toggleShowJunctions.setText(("Show Junctions: " + (Variables.drawJunction ? "On" : "Off")));
         });
 
         //Change listener for Connector show toggle
         toggleShowConnectors.addActionListener(e -> {
-            clothSimulation.setDrawConnectors(!clothSimulation.isDrawConnectors());
-            toggleShowConnectors.setText(("Show Connectors: " + (clothSimulation.isDrawConnectors() ? "On" : "Off")));
+            Variables.drawConnectors = !Variables.drawConnectors;
+            toggleShowConnectors.setText(("Show Connectors: " + (Variables.drawConnectors ? "On" : "Off")));
         });
 
         //Change listener for Stress show toggle
         toggleShowStress.addActionListener(e -> {
-            clothSimulation.setShowStress(!clothSimulation.isShowStress());
-            toggleShowStress.setText(("Show Stress: " + (clothSimulation.isShowStress() ? "On" : "Off")));
+            Variables.showStress = !Variables.showStress;
+            toggleShowStress.setText(("Show Stress: " + (Variables.showStress ? "On" : "Off")));
         });
 
         //Change listener for Shading show toggle
         toggleShading.addActionListener(e -> {
-            clothSimulation.setShowShading(!clothSimulation.isShowShading());
-            toggleShading.setText(("Show Shading: " + (clothSimulation.isShowShading() ? "On" : "Off")));
+            Variables.showShading = !Variables.showShading;
+            toggleShading.setText(("Show Shading: " + (Variables.showShading ? "On" : "Off")));
         });
 
         //Action listener for opening the color picker for Junctions.
         selectJunctionColor.addActionListener(e -> {
-            clothSimulation.setJunctionColor(JColorChooser.showDialog(clothSimulation, "Junction Color Picker", null));
+            Variables.junctionColor = JColorChooser.showDialog(Variables.clothSimulation, "Junction Color Picker", null);
         });
 
         //Action listener for opening the color picker for Connectors.
         selectConnectorColor.addActionListener(e -> {
-            clothSimulation.setConnectorColor(JColorChooser.showDialog(clothSimulation, "Connector Color Picker", null));
+            Variables.connectorColor = JColorChooser.showDialog(Variables.clothSimulation, "Connector Color Picker", null);
         });
 
         //Add the ClothSimulation JPanel to the appropriate place within the JFrame.
-        frame.add(clothSimulation, BorderLayout.CENTER);
+        Variables.window.add(Variables.clothSimulation, BorderLayout.CENTER);
 
         //Add the options JPanel to the appropriate place within the JFrame.
-        frame.add(options, BorderLayout.SOUTH);
+        Variables.window.add(options, BorderLayout.SOUTH);
 
         //Slider visuals
         setupSliderVisuals(windSlider, "Wind", 1, 0);
-        setupSliderVisuals(gravitySlider, "Gravity", 1, (int) (clothSimulation.cloth.getGravityStrength() * 10));
-        setupSliderVisuals(dampeningSlider, "Dampening", 10, (int) (clothSimulation.cloth.getDampeningCoeff() * 100));
-        setupSliderVisuals(maxStressSlider, "Max Stress", 100, (int) (clothSimulation.cloth.getMaxStress()));
+        setupSliderVisuals(gravitySlider, "Gravity", 1, (int) (Variables.gravityStrength * 10));
+        setupSliderVisuals(dampeningSlider, "Dampening", 10, (int) (Variables.dampeningCoeff * 100));
+        setupSliderVisuals(maxStressSlider, "Max Stress", 100, (int) (Variables.maxStress));
 
         //Slider Text
         setupSliderTextVisuals(windText);
@@ -189,13 +180,13 @@ public class Start {
         options.add(startSimulation);
 
         //Pack the frame.
-        frame.pack();
+        Variables.window.pack();
 
         //Set the frame to visible.
-        frame.setVisible(true);
+        Variables.window.setVisible(true);
 
         //Return the instance of the current ClothSimulation.
-        return clothSimulation;
+        return Variables.clothSimulation;
     }
 
     /**
