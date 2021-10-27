@@ -9,13 +9,6 @@ public class Cloth {
     //List of all Junctions.
     ArrayList<Junction> junctionsArrayList = new ArrayList<>();
 
-    //The distance between each Junction upon creation.
-    private int junctionDistance = 20;
-
-    //The number of Junction on each axis.
-    private int junctionCountX;
-    private int junctionCountY;
-
     //The starting coordinate of each axis of Junction.
     private int startJunctionX;
     private int startJunctionY = 50;
@@ -36,14 +29,9 @@ public class Cloth {
 
     /**
      * Initialization of the Cloth.
-     *
-     * @param junctionCountX - The number of horizontal Junctions.
-     * @param junctionCountY - The number of vertical Junctions.
      */
-    public Cloth(int junctionCountX, int junctionCountY) {
-        this.junctionCountX = junctionCountX;
-        this.junctionCountY = junctionCountY;
-        this.startJunctionX = 500 - (junctionCountX * this.junctionDistance) / 2;
+    public Cloth() {
+        this.startJunctionX = Variables.SIMULATION_WIDTH/2 - (Variables.JUNCTION_COUNT_X * Variables.JUNCTION_DISTANCE) / 2;
         createJunctions();
         createConnectors();
     }
@@ -87,11 +75,11 @@ public class Cloth {
      * Initializes all the initial Junctions.
      */
     public void createJunctions() { //efficiency check
-        for (int i = 0; i < this.junctionCountX * this.junctionCountY; i++) {
+        for (int i = 0; i < Variables.JUNCTION_COUNT_X * Variables.JUNCTION_COUNT_Y; i++) {
             int row = getRowFromNumber(i);
             int col = getColFromNumber(i);
-            this.junctionsArrayList.add(new Junction(this, this.startJunctionX + (this.junctionDistance * row), this.startJunctionY + (this.junctionDistance * col),
-                    (col == 0 && (row == 0 || row == this.junctionCountY - 1 || row == this.junctionCountY / 2)) || (col == this.junctionCountX - 1 && (row == 0 || row == this.junctionCountY - 1)) ? JunctionState.ANCHOR : JunctionState.NORMAL));
+            this.junctionsArrayList.add(new Junction(this, this.startJunctionX + (Variables.JUNCTION_DISTANCE * row), this.startJunctionY + (Variables.JUNCTION_DISTANCE * col),
+                    (col == 0 && (row == 0 || row == Variables.JUNCTION_COUNT_Y - 1 || row == Variables.JUNCTION_COUNT_Y / 2)) || (col == Variables.JUNCTION_COUNT_X - 1 && (row == 0 || row == Variables.JUNCTION_COUNT_Y - 1)) ? JunctionState.ANCHOR : JunctionState.NORMAL));
         }
     }
 
@@ -102,7 +90,7 @@ public class Cloth {
      * @returns the row.
      */
     public int getRowFromNumber(int num) {
-        return (int) Math.floor(num / this.junctionCountX);
+        return (int) Math.floor(num / Variables.JUNCTION_COUNT_X);
     }
 
     /**
@@ -112,7 +100,7 @@ public class Cloth {
      * @returns the column.
      */
     public int getColFromNumber(int num) {
-        return num % this.junctionCountY;
+        return num % Variables.JUNCTION_COUNT_Y;
     }
 
     /**
@@ -120,17 +108,17 @@ public class Cloth {
      */
     public void createConnectors() {
 
-        for (int i = 0; i < this.junctionCountX * this.junctionCountY; i++) {
+        for (int i = 0; i < Variables.JUNCTION_COUNT_X * Variables.JUNCTION_COUNT_Y; i++) {
 
             Junction currentJunction = (Junction) this.junctionsArrayList.toArray()[i];
 
-            if (getRowFromNumber(i) != this.junctionCountY - 1) {
-                Connector connector = new Connector(this, currentJunction, (Junction) this.junctionsArrayList.toArray()[i + this.junctionCountY]);
+            if (getRowFromNumber(i) != Variables.JUNCTION_COUNT_Y - 1) {
+                Connector connector = new Connector(this, currentJunction, (Junction) this.junctionsArrayList.toArray()[i + Variables.JUNCTION_COUNT_Y]);
                 this.connectorArrayList.add(connector);
                 currentJunction.getRelatedConnectors().add(connector);
-                ((Junction) this.junctionsArrayList.toArray()[i + this.junctionCountY]).getRelatedConnectors().add(connector);
+                ((Junction) this.junctionsArrayList.toArray()[i + Variables.JUNCTION_COUNT_Y]).getRelatedConnectors().add(connector);
             }
-            if (getColFromNumber(i) != this.junctionCountX - 1) {
+            if (getColFromNumber(i) != Variables.JUNCTION_COUNT_X - 1) {
                 Connector connector = new Connector(this, currentJunction, (Junction) this.junctionsArrayList.toArray()[i + 1]);
                 this.connectorArrayList.add(connector);
                 currentJunction.getRelatedConnectors().add(connector);
@@ -223,30 +211,6 @@ public class Cloth {
     /**
      * Getters and Setters
      */
-    public int getJunctionDistance() {
-        return this.junctionDistance;
-    }
-
-    public void setJunctionDistance(int junctionDistance) {
-        this.junctionDistance = junctionDistance;
-    }
-
-    public int getJunctionCountX() {
-        return this.junctionCountX;
-    }
-
-    public void setJunctionCountX(int junctionCountX) {
-        this.junctionCountX = junctionCountX;
-    }
-
-    public int getJunctionCountY() {
-        return this.junctionCountY;
-    }
-
-    public void setJunctionCountY(int junctionCountY) {
-        this.junctionCountY = junctionCountY;
-    }
-
     public int getStartJunctionX() {
         return this.startJunctionX;
     }

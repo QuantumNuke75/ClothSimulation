@@ -2,8 +2,6 @@ package main;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Dictionary;
 import java.util.Enumeration;
 
@@ -11,10 +9,6 @@ public class Start {
 
     //Instance of this class.
     public static Start INSTANCE;
-
-    //Width and height of the Cloth.
-    int junctionCountX = 21;
-    int junctionCountY = 21;
 
     //The instance of the ClothSimulation.
     ClothSimulation clothSimulation;
@@ -59,8 +53,8 @@ public class Start {
     /**
      * Creates a new instance of the JFrame and the ClothSimulation.
      *
-     * @param width
-     * @param height
+     * @param width - The width of the window.
+     * @param height - The height of the window.
      * @return
      */
     public ClothSimulation createWindow(int width, int height) {
@@ -80,7 +74,7 @@ public class Start {
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         //Creates a new instance of the ClothSimulation.
-        clothSimulation = new ClothSimulation(junctionCountX, junctionCountY);
+        clothSimulation = new ClothSimulation();
 
         //Start simulation button
         startSimulation.addActionListener(e -> {

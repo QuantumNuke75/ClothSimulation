@@ -64,16 +64,16 @@ public class Junction {
             this.currentY = tempY;
 
             //Check for out of bounds on the y-axis.
-            if (this.currentY > 1000) {
-                this.currentY = 1000;
+            if (this.currentY > Variables.SIMULATION_HEIGHT) {
+                this.currentY = Variables.SIMULATION_HEIGHT;
             }
             else if (this.currentY < 0) {
                 this.currentY = 0;
             }
 
             //Check for out of bounds on the x-axis.
-            if (this.currentX > 1000) {
-                this.currentX = 1000;
+            if (this.currentX > Variables.SIMULATION_WIDTH) {
+                this.currentX = Variables.SIMULATION_WIDTH;
             }
             else if (this.currentX < 0) {
                 this.currentX = 0;
