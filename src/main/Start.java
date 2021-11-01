@@ -31,6 +31,7 @@ public class Start {
      * @param args - The command line arguments.
      */
     public static void main(String[] args) {
+
         //Creates a new static instance of the Start class.
         Variables.start = new Start();
 
@@ -46,7 +47,7 @@ public class Start {
      *
      * @param width - The width of the window.
      * @param height - The height of the window.
-     * @return
+     * @return The new instance of the {@link ClothSimulation}
      */
     public ClothSimulation createWindow(int width, int height) {
         //Create a new JFrame instance.
@@ -70,7 +71,7 @@ public class Start {
         //Start simulation button
         startSimulation.addActionListener(e -> {
             Variables.clothSimulation.togglePause();
-            if(Variables.clothSimulation.isPaused)
+            if(Variables.isSimulationPaused)
                 startSimulation.setText("Unpause Simulation");
             else
                 startSimulation.setText("Pause Simulation");
@@ -163,20 +164,33 @@ public class Start {
         options.setLayout(new GridLayout(8, 2));
 
         //Adds all the options to the options JPanel.
+        //Add wind options
         options.add(windText);
         options.add(windSlider);
+
+        //Add gravity option
         options.add(gravityText);
         options.add(gravitySlider);
+
+        //Add dampening option
         options.add(dampeningText);
         options.add(dampeningSlider);
+
+        //Add stress option
         options.add(maxStressText);
         options.add(maxStressSlider);
+
+        //Toggle options
         options.add(toggleShowJunctions);
         options.add(toggleShowConnectors);
         options.add(toggleShowStress);
         options.add(toggleShading);
+
+        //Color options
         options.add(selectJunctionColor);
         options.add(selectConnectorColor);
+
+        //Start sim
         options.add(startSimulation);
 
         //Pack the frame.
@@ -184,6 +198,7 @@ public class Start {
 
         //Set the frame to visible.
         Variables.window.setVisible(true);
+        Variables.window.setExtendedState(Variables.window.MAXIMIZED_BOTH);
 
         //Return the instance of the current ClothSimulation.
         return Variables.clothSimulation;

@@ -2,26 +2,25 @@ package main;
 
 public class Connector {
 
-    //The instance of the cloth.
-    private final Cloth cloth;
     //First junction
     Junction junctionA;
+
     //End junction
     Junction junctionB;
+
     //Current length
     Double length;
+
     //Normal length
     Double normalLength = 20.0;
 
     /**
      * The constructor for a Connector.
      *
-     * @param cloth     {@link Cloth} - The Cloth instance.
      * @param junctionA - The associated first Junction.
      * @param junctionB - The associated last Junction.
      */
-    public Connector(Cloth cloth, Junction junctionA, Junction junctionB) {
-        this.cloth = cloth;
+    public Connector(Junction junctionA, Junction junctionB) {
         this.junctionA = junctionA;
         this.junctionB = junctionB;
     }

@@ -13,7 +13,7 @@ public class Variables {
     public static final int JUNCTION_COUNT_Y = 21;
     public static final int JUNCTION_DISTANCE = 20;
 
-    //One-change Variables
+    //Easy Reference Variables
     public static ClothSimulation clothSimulation;
     public static Cloth cloth;
     public static Start start;
@@ -26,15 +26,17 @@ public class Variables {
     public static float newWindStrengthX;
     public static double maxStress = 225;
 
+    //Boolean Settings Variables
     public static boolean drawJunction = false;
     public static boolean drawConnectors = true;
     public static boolean showStress = true;
     public static boolean showShading = false;
 
+    //Color Settings Variables
     public static Color junctionColor = Color.BLUE;
     public static Color connectorColor = Color.GREEN;
 
-
-
-
+    //Other
+    public static boolean isSimulationPaused = true;
+    public static double dT = 0.98;
 }

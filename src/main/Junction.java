@@ -7,9 +7,6 @@ public class Junction {
     //The total stress of the Junction.
     public float totalStress;
 
-    //The instance of the cloth.
-    private Cloth cloth;
-
     //Position related variables.
     private double currentX;
     private double currentY;
@@ -23,17 +20,15 @@ public class Junction {
     //The current state of the particle
     private JunctionState junctionState;
 
-    //An {@link ArrayList} of all the connected Connectors.
+    //An ArrayList of all the connected Connectors.
     private ArrayList<Connector> relatedConnectors = new ArrayList<>();
 
     /**
-     * @param cloth         {@link Cloth}
      * @param x             - The given x position of the Junction.
      * @param y             - The given y position of the Junction.
      * @param junctionState - The given state of the particle.
      */
-    public Junction(Cloth cloth, double x, double y, JunctionState junctionState) {
-        this.cloth = cloth;
+    public Junction(double x, double y, JunctionState junctionState) {
         this.currentX = x;
         this.previousX = x;
         this.currentY = y;
@@ -51,9 +46,9 @@ public class Junction {
      */
     public void update(double dT) {
         if (this.junctionState == JunctionState.NORMAL) {
-            //Calculates new position.
-            double tempX = this.currentX + Variables.dampeningCoeff * ((this.currentX - this.previousX) + 0.5 * Variables.newWindStrengthX * dT * dT);
-            double tempY = this.currentY + Variables.dampeningCoeff * ((this.currentY - this.previousY) + 0.5 * Variables.gravityStrength * dT * dT);
+            //Calculates new position. (Current pos + dampening * (displacement + forces))
+            double tempX = this.currentX + Variables.dampeningCoeff * ((this.currentX - this.previousX) + /*0.5 **/ Variables.newWindStrengthX * Math.pow(dT, 2));
+            double tempY = this.currentY + Variables.dampeningCoeff * ((this.currentY - this.previousY) + /*0.5 **/ Variables.gravityStrength * Math.pow(dT, 2));
 
             //Set previous coordinates.
             this.previousX = this.currentX;

@@ -26,7 +26,6 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
     //Threads
     Thread paintThread;
     Thread calculationThread;
-    boolean isPaused = true;
 
     /**
      * The constructor. Creates a new Cloth instance and sets up listeners.
@@ -43,7 +42,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
      */
     public void run() {
         //Create image directory
-        File file = new File("C:\\\\Users\\\\ethan\\\\OneDrive\\\\Desktop\\\\Cloth Simulation Images\\" + this.folder);
+        File file = new File("C:\\Users\\ethan\\OneDrive\\Desktop\\Cloth Simulation Images\\" + this.folder);
         file.mkdir();
 
         //Create and start a new PaintThread
@@ -55,8 +54,11 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         calculationThread.start();
     }
 
+    /**
+     * Pauses and unpauses the running Caluclation Thread
+     */
     public void togglePause(){
-        this.isPaused = !this.isPaused;
+        Variables.isSimulationPaused = !Variables.isSimulationPaused;
     }
 
     /**
@@ -78,10 +80,10 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         //Draw the border.
         g.setStroke(new BasicStroke(5));
         g.setColor(Color.WHITE);
-        g.drawLine(0 + (this.getWidth() - thousandCoordinates[0]) / 2, 0, thousandCoordinates[0] + (this.getWidth() - thousandCoordinates[0]) / 2, 0);
+        g.drawLine((this.getWidth() - thousandCoordinates[0]) / 2, 0, thousandCoordinates[0] + (this.getWidth() - thousandCoordinates[0]) / 2, 0);
         g.drawLine(thousandCoordinates[0] + (this.getWidth() - thousandCoordinates[0]) / 2, 0, thousandCoordinates[0] + (this.getWidth() - thousandCoordinates[0]) / 2, thousandCoordinates[1]);
-        g.drawLine(thousandCoordinates[0] + (this.getWidth() - thousandCoordinates[0]) / 2, thousandCoordinates[1], 0 + (this.getWidth() - thousandCoordinates[0]) / 2, thousandCoordinates[1]);
-        g.drawLine(0 + (this.getWidth() - thousandCoordinates[0]) / 2, thousandCoordinates[1], (this.getWidth() - thousandCoordinates[0]) / 2, 0);
+        g.drawLine(thousandCoordinates[0] + (this.getWidth() - thousandCoordinates[0]) / 2, thousandCoordinates[1], (this.getWidth() - thousandCoordinates[0]) / 2, thousandCoordinates[1]);
+        g.drawLine((this.getWidth() - thousandCoordinates[0]) / 2, thousandCoordinates[1], (this.getWidth() - thousandCoordinates[0]) / 2, 0);
 
         if (Variables.showShading) {
             colorAreas(g);
@@ -271,7 +273,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
      * @returns the validates color.
      */
     public int validateColorBounds(int color) {
-        color = color > 255 ? 255 : color < 0 ? 0 : color;
+        color = color > 255 ? 255 : Math.max(color, 0);
         return color;
     }
 
@@ -419,14 +421,16 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
      * Save the image.
      */
     public void captureAndSaveImage(){
-        BufferedImage bi = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB);
-        Graphics g = bi.createGraphics();
-        this.print(g);
-        g.dispose();
+        BufferedImage bufferedImage = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics graphics = bufferedImage.createGraphics();
+        this.print(graphics);
+        graphics.dispose();
         try {
+            //For cropping of the image taken
             int[] thousandCoords = convertSimulationCoordsToScreenSpaceCoords(Variables.SIMULATION_WIDTH, Variables.SIMULATION_HEIGHT);
-            bi = bi.getSubimage((this.getWidth() - thousandCoords[0]) / 2, (this.getHeight() - thousandCoords[1]) / 2, thousandCoords[0], thousandCoords[1]);
-            ImageIO.write(bi, "png", new File("C:\\Users\\ethan\\OneDrive\\Desktop\\Cloth Simulation Images\\" + this.folder + "\\" + this.image_num + ".png"));
+            bufferedImage = bufferedImage.getSubimage((this.getWidth() - thousandCoords[0]) / 2, (this.getHeight() - thousandCoords[1]) / 2, thousandCoords[0], thousandCoords[1]);
+            //Write the image to a specified file.
+            ImageIO.write(bufferedImage, "jpg", new File("C:\\Users\\ethan\\OneDrive\\Desktop\\Cloth Simulation Images\\" + this.folder + "\\" + this.image_num + ".jpg"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -459,25 +463,18 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         @Override
         public void run() {
             while (true) {
-                if(true){//!Variables.clothSimulation.isPaused) {
-                    long firstTime = System.currentTimeMillis();
-                    Variables.clothSimulation.repaint();
+                long firstTime = System.currentTimeMillis();
+                Variables.clothSimulation.repaint();
+                if (!Variables.isSimulationPaused) {
                     captureAndSaveImage();
-                    try {
-                        Thread.sleep(15);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    long secondTime = System.currentTimeMillis();
-                    //System.out.println("Draw took: " + (secondTime - firstTime) + " ms");
                 }
-                else{
-                    try {
-                        Thread.sleep(15);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    Thread.sleep(15);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
+                long secondTime = System.currentTimeMillis();
+                //System.out.println("Draw took: " + (secondTime - firstTime) + " ms");
             }
         }
     }
@@ -487,9 +484,9 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         @Override
         public void run() {
             while (true) {
-                if(!Variables.clothSimulation.isPaused) {
+                if(!Variables.isSimulationPaused) {
                     long firstTime = System.currentTimeMillis();
-                    Variables.cloth.updateCloth(0.98);
+                    Variables.cloth.updateCloth();
                     try {
                         Thread.sleep(15);
                     } catch (InterruptedException e) {
