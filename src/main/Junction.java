@@ -46,7 +46,7 @@ public class Junction {
      */
     public void update(double dT) {
         if (this.junctionState == JunctionState.NORMAL) {
-            //Calculates new position. (Current pos + dampening * (displacement + forces))
+            //Calculates new position. (Current pos + dampening * (displacement + forces*dT))
             double tempX = this.currentX + Variables.dampeningCoeff * ((this.currentX - this.previousX) + /*0.5 **/ Variables.newWindStrengthX * Math.pow(dT, 2));
             double tempY = this.currentY + Variables.dampeningCoeff * ((this.currentY - this.previousY) + /*0.5 **/ Variables.gravityStrength * Math.pow(dT, 2));
 

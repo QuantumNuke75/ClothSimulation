@@ -1,12 +1,16 @@
 package main;
 
+import org.jcodec.api.SequenceEncoder;
+import org.jcodec.common.model.ColorSpace;
+import org.jcodec.common.model.Picture;
+import org.jcodec.scale.AWTUtil;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
@@ -31,7 +35,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
      * The constructor. Creates a new Cloth instance and sets up listeners.
      */
     public ClothSimulation() {
-        super();
+        super(true);
         Variables.cloth = new Cloth();
         addMouseListener(this);
         addMouseMotionListener(this);
@@ -430,11 +434,26 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
             int[] thousandCoords = convertSimulationCoordsToScreenSpaceCoords(Variables.SIMULATION_WIDTH, Variables.SIMULATION_HEIGHT);
             bufferedImage = bufferedImage.getSubimage((this.getWidth() - thousandCoords[0]) / 2, (this.getHeight() - thousandCoords[1]) / 2, thousandCoords[0], thousandCoords[1]);
             //Write the image to a specified file.
-            ImageIO.write(bufferedImage, "jpg", new File("C:\\Users\\ethan\\OneDrive\\Desktop\\Cloth Simulation Images\\" + this.folder + "\\" + this.image_num + ".jpg"));
+            ImageIO.write(bufferedImage, "png", new File("C:\\Users\\ethan\\OneDrive\\Desktop\\Cloth Simulation Images\\" + this.folder + "\\" + this.image_num + ".png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
         image_num++;
+    }
+
+    public void createVideo() throws IOException {
+        //Create a sequence encoder
+        SequenceEncoder enc = SequenceEncoder.createSequenceEncoder(new File("C:\\Users\\ethan\\OneDrive\\Desktop\\Cloth Simulation Images\\" + this.folder + ".mp4"), 30);
+        //for all the images in the folder
+        for(int i = 0; i < this.image_num; i++) {
+            //read the image
+            BufferedImage image = ImageIO.read(new File("C:\\Users\\ethan\\OneDrive\\Desktop\\Cloth Simulation Images\\" + this.folder + "\\" + i + ".png"));
+            //convert BufferedImage to Picture
+            Picture picture = AWTUtil.fromBufferedImage(image, ColorSpace.RGB);
+            //Encode the picture
+            enc.encodeNativeFrame(picture);
+        }
+        enc.finish();
     }
 
     /**
@@ -457,7 +476,13 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
     }
 
     public void mouseMoved(MouseEvent e) {
+        //implement connector cutting
+        //get line moved
+        //get line of junction
+        //calculate intersection
+        //if intersect, break connector
     }
+
     //Inner class for purposes of splitting drawing onto a different thread for timing purposes
     class PaintThread extends Thread {
         @Override
@@ -469,7 +494,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
                     captureAndSaveImage();
                 }
                 try {
-                    Thread.sleep(15);
+                    Thread.sleep(Utils.FPStoMSPF(60));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -493,8 +518,8 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
                         e.printStackTrace();
                     }
                     long secondTime = System.currentTimeMillis();
-                    System.out.println("Step took: " + (secondTime - firstTime) + " ms");
-                    System.out.println("Calculation per Second: " + (int) (1000.0 / (secondTime - firstTime)));
+                    //System.out.println("Step took: " + (secondTime - firstTime) + " ms");
+                    //System.out.println("Calculation per Second: " + (int) (1000.0 / (secondTime - firstTime)));
                 }
                 else{
                     try {

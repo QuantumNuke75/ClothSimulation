@@ -62,7 +62,7 @@ public class Cloth {
             int col = getColFromNumber(i);
             this.junctionsArrayList.add(
                     new Junction(this.startJunctionX + (Variables.JUNCTION_DISTANCE * row),
-                            this.startJunctionY + (Variables.JUNCTION_DISTANCE * col),
+                                 this.startJunctionY + (Variables.JUNCTION_DISTANCE * col),
                     (col == 0 && (row == 0 || row == Variables.JUNCTION_COUNT_Y - 1 || row == Variables.JUNCTION_COUNT_Y / 2)) || (col == Variables.JUNCTION_COUNT_X - 1 && (row == 0 || row == Variables.JUNCTION_COUNT_Y - 1)) ? JunctionState.ANCHOR : JunctionState.NORMAL));
         }
     }

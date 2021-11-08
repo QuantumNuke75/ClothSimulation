@@ -5,7 +5,7 @@ public class Connector {
     //First junction
     Junction junctionA;
 
-    //End junction
+    //Second junction
     Junction junctionB;
 
     //Current length
@@ -50,8 +50,8 @@ public class Connector {
         double difference = (this.normalLength - this.length) / this.length;
 
         //calculate translation amount for junctions
-        double translationX = differenceX * difference * Math.pow(0.5, 2);
-        double translationY = differenceY * difference * Math.pow(0.5, 2);
+        double translationX = differenceX * difference * 0.25;
+        double translationY = differenceY * difference * 0.25;
 
         //update the coordinates for one of the connected junctions if the junction is permitted to move
         if (this.junctionA.getJunctionState() == JunctionState.NORMAL) {

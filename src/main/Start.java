@@ -2,6 +2,9 @@ package main;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Enumeration;
 
@@ -21,6 +24,7 @@ public class Start {
     JButton toggleShading = new JButton("Show Shading: Off");
 
     JButton startSimulation = new JButton("Start Simulation");
+    JButton createVideo = new JButton("Create Video");
 
     JButton selectJunctionColor = new JButton("Junction Color Picker");
     JButton selectConnectorColor = new JButton("Connector Color Picker");
@@ -56,7 +60,7 @@ public class Start {
         //Create a new JPanel instance for use in an options menu.
         JPanel options = new JPanel();
 
-        //Sets the layout of the JFrame to a {@link BorderLayout}
+        //Sets the layout of the JFrame to a BorderLayout
         Variables.window.setLayout(new BorderLayout());
 
         //Sets the width and height of the JFrame
@@ -75,6 +79,15 @@ public class Start {
                 startSimulation.setText("Unpause Simulation");
             else
                 startSimulation.setText("Pause Simulation");
+        });
+
+        //Create video button
+        createVideo.addActionListener(e -> {
+            try {
+                Variables.clothSimulation.createVideo();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         });
 
         //Change listener for Wind slider.
@@ -156,6 +169,7 @@ public class Start {
         setupButtonVisuals(selectJunctionColor);
         setupButtonVisuals(selectConnectorColor);
         setupButtonVisuals(startSimulation);
+        setupButtonVisuals(createVideo);
 
         //Sets the background of the options JPanel to black
         options.setBackground(Color.BLACK);
@@ -192,6 +206,9 @@ public class Start {
 
         //Start sim
         options.add(startSimulation);
+
+        //Video Creation
+        options.add(createVideo);
 
         //Pack the frame.
         Variables.window.pack();

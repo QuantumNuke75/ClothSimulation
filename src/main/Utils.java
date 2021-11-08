@@ -6,9 +6,9 @@ public class Utils {
      * @param fps - The FPS value to convert to MSPF.
      * @returns the MSPF value.
      */
-    public static double FPStoMSPF(double fps){
+    public static long FPStoMSPF(double fps){
         // frames/second TO milliseconds/frame
-        return (1/fps) * 1000;
+        return (long) ((1/fps) * 1000);
     }
 
     /**
