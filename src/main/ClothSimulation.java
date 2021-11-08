@@ -441,19 +441,9 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         image_num++;
     }
 
-    public void createVideo() throws IOException {
-        //Create a sequence encoder
-        SequenceEncoder enc = SequenceEncoder.createSequenceEncoder(new File("C:\\Users\\ethan\\OneDrive\\Desktop\\Cloth Simulation Images\\" + this.folder + ".mp4"), 30);
-        //for all the images in the folder
-        for(int i = 0; i < this.image_num; i++) {
-            //read the image
-            BufferedImage image = ImageIO.read(new File("C:\\Users\\ethan\\OneDrive\\Desktop\\Cloth Simulation Images\\" + this.folder + "\\" + i + ".png"));
-            //convert BufferedImage to Picture
-            Picture picture = AWTUtil.fromBufferedImage(image, ColorSpace.RGB);
-            //Encode the picture
-            enc.encodeNativeFrame(picture);
-        }
-        enc.finish();
+    public void createAsyncVideoThread(){
+        Thread createVideoThread = new CreateVideoThread();
+        createVideoThread.start();
     }
 
     /**
@@ -528,6 +518,28 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
                         e.printStackTrace();
                     }
                 }
+            }
+        }
+    }
+    class CreateVideoThread extends Thread {
+        @Override
+        public void run() {
+            try {
+                //Create a sequence encoder
+                SequenceEncoder enc = SequenceEncoder.createSequenceEncoder(new File("C:\\Users\\ethan\\OneDrive\\Desktop\\Cloth Simulation Images\\" + Variables.clothSimulation.folder + ".mp4"), 30);
+                //for all the images in the folder
+                for (int i = 0; i < Variables.clothSimulation.image_num; i++) {
+                    //read the image
+                    BufferedImage image = ImageIO.read(new File("C:\\Users\\ethan\\OneDrive\\Desktop\\Cloth Simulation Images\\" + Variables.clothSimulation.folder + "\\" + i + ".png"));
+                    //convert BufferedImage to Picture
+                    Picture picture = AWTUtil.fromBufferedImage(image, ColorSpace.RGB);
+                    //Encode the picture
+                    enc.encodeNativeFrame(picture);
+                }
+                enc.finish();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }

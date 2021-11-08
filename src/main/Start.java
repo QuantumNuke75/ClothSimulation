@@ -83,11 +83,7 @@ public class Start {
 
         //Create video button
         createVideo.addActionListener(e -> {
-            try {
-                Variables.clothSimulation.createVideo();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
+            Variables.clothSimulation.createAsyncVideoThread();
         });
 
         //Change listener for Wind slider.
