@@ -57,7 +57,7 @@ public class Start {
         //Create a new JFrame instance.
         Variables.window = new JFrame("Cloth Simulation");
 
-        //Create a new JPanel instance for use in an options menu.
+        //Create a new JPanel instance for use in the options menu.
         JPanel options = new JPanel();
 
         //Sets the layout of the JFrame to a BorderLayout

@@ -1,8 +1,12 @@
 package main;
 
 import org.jcodec.api.SequenceEncoder;
+import org.jcodec.api.awt.AWTSequenceEncoder;
+import org.jcodec.common.io.NIOUtils;
+import org.jcodec.common.io.SeekableByteChannel;
 import org.jcodec.common.model.ColorSpace;
 import org.jcodec.common.model.Picture;
+import org.jcodec.common.model.Rational;
 import org.jcodec.scale.AWTUtil;
 
 import javax.imageio.ImageIO;
@@ -12,6 +16,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -503,7 +508,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
                     long firstTime = System.currentTimeMillis();
                     Variables.cloth.updateCloth();
                     try {
-                        Thread.sleep(15);
+                        Thread.sleep(Utils.FPStoMSPF(60));
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -525,6 +530,10 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         @Override
         public void run() {
             try {
+                //Change text of button
+                Variables.start.createVideo.setText("Running");
+                Variables.start.createVideo.setEnabled(false);
+
                 //Create a sequence encoder
                 SequenceEncoder enc = SequenceEncoder.createSequenceEncoder(new File("C:\\Users\\ethan\\OneDrive\\Desktop\\Cloth Simulation Images\\" + Variables.clothSimulation.folder + ".mp4"), 30);
                 //for all the images in the folder
@@ -537,6 +546,8 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
                     enc.encodeNativeFrame(picture);
                 }
                 enc.finish();
+                Variables.start.createVideo.setText("Create Video");
+                Variables.start.createVideo.setEnabled(true);
             }
             catch (IOException e) {
                 e.printStackTrace();
