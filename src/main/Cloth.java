@@ -3,21 +3,19 @@ package main;
 import java.util.ArrayList;
 
 public class Cloth {
+    //The starting coordinate of each axis of Junction.
+    public int startJunctionX;
+    public int startJunctionY = 50; //implement fix for vertical scaling
     //List of all Connectors.
     ArrayList<Connector> connectorArrayList = new ArrayList<>();
-
     //List of all Junctions.
     ArrayList<Junction> junctionsArrayList = new ArrayList<>();
-
-    //The starting coordinate of each axis of Junction.
-    private int startJunctionX;
-    private int startJunctionY = 50; //implement fix for vertical scaling
 
     /**
      * Initialization of the Cloth.
      */
     public Cloth() {
-        this.startJunctionX = Variables.SIMULATION_WIDTH/2 - (Variables.JUNCTION_COUNT_X * Variables.JUNCTION_DISTANCE) / 2;
+        this.startJunctionX = Variables.SIMULATION_WIDTH / 2 - (Variables.JUNCTION_COUNT_X * Variables.JUNCTION_DISTANCE) / 2;
         createJunctions();
         createConnectors();
     }
@@ -43,7 +41,7 @@ public class Cloth {
         //Update all the junctions in order
         for (Junction junction : this.junctionsArrayList) {
             //Only if the JunctionState is normal.
-            if (junction != null && junction.getJunctionState() == JunctionState.NORMAL) {
+            if (junction != null && junction.junctionState == JunctionState.NORMAL) {
                 junction.update(Variables.dT);
             }
         }
@@ -62,8 +60,8 @@ public class Cloth {
             int col = getColFromNumber(i);
             this.junctionsArrayList.add(
                     new Junction(this.startJunctionX + (Variables.JUNCTION_DISTANCE * row),
-                                 this.startJunctionY + (Variables.JUNCTION_DISTANCE * col),
-                    (col == 0 && (row == 0 || row == Variables.JUNCTION_COUNT_Y - 1 || row == Variables.JUNCTION_COUNT_Y / 2)) || (col == Variables.JUNCTION_COUNT_X - 1 && (row == 0 || row == Variables.JUNCTION_COUNT_Y - 1)) ? JunctionState.ANCHOR : JunctionState.NORMAL));
+                            this.startJunctionY + (Variables.JUNCTION_DISTANCE * col),
+                            (col == 0 && (row == 0 || row == Variables.JUNCTION_COUNT_Y - 1 || row == Variables.JUNCTION_COUNT_Y / 2)) || (col == Variables.JUNCTION_COUNT_X - 1 && (row == 0 || row == Variables.JUNCTION_COUNT_Y - 1)) ? JunctionState.ANCHOR : JunctionState.NORMAL));
         }
     }
 
@@ -99,14 +97,14 @@ public class Cloth {
             if (getRowFromNumber(i) != Variables.JUNCTION_COUNT_Y - 1) {
                 Connector connector = new Connector(currentJunction, (Junction) this.junctionsArrayList.toArray()[i + Variables.JUNCTION_COUNT_Y]);
                 this.connectorArrayList.add(connector);
-                currentJunction.getRelatedConnectors().add(connector);
-                ((Junction) this.junctionsArrayList.toArray()[i + Variables.JUNCTION_COUNT_Y]).getRelatedConnectors().add(connector);
+                currentJunction.relatedConnectors.add(connector);
+                ((Junction) this.junctionsArrayList.toArray()[i + Variables.JUNCTION_COUNT_Y]).relatedConnectors.add(connector);
             }
             if (getColFromNumber(i) != Variables.JUNCTION_COUNT_X - 1) {
                 Connector connector = new Connector(currentJunction, (Junction) this.junctionsArrayList.toArray()[i + 1]);
                 this.connectorArrayList.add(connector);
-                currentJunction.getRelatedConnectors().add(connector);
-                ((Junction) this.junctionsArrayList.toArray()[i + 1]).getRelatedConnectors().add(connector);
+                currentJunction.relatedConnectors.add(connector);
+                ((Junction) this.junctionsArrayList.toArray()[i + 1]).relatedConnectors.add(connector);
             }
         }
     }
@@ -124,24 +122,24 @@ public class Cloth {
             if (junction.totalStress > Variables.maxStress) {
 
                 //For every related Connector to the Junction.
-                for (Connector relatedConnector : junction.getRelatedConnectors()) {
+                for (Connector relatedConnector : junction.relatedConnectors) {
 
                     //Create a replacement Junction for every related Connector.
-                    Junction replacementJunction = new Junction(junction.getCurrentX(), junction.getCurrentY(), JunctionState.NORMAL);
+                    Junction replacementJunction = new Junction(junction.currentPos.x, junction.currentPos.y, JunctionState.NORMAL);
 
                     //Replace the end Junction if the Junctions are equal.
-                    if (relatedConnector.getJunctionB().equals(junction)) {
-                        relatedConnector.setJunctionB(replacementJunction);
+                    if (relatedConnector.junctionB.equals(junction)) {
+                        relatedConnector.junctionB = replacementJunction;
                         this.junctionsArrayList.add(replacementJunction);
                     }
                     //Replace the start Junction if the Junctions are equal.
                     else {
-                        relatedConnector.setJunctionA(replacementJunction);
+                        relatedConnector.junctionA = replacementJunction;
                         this.junctionsArrayList.add(replacementJunction);
                     }
                 }
                 //Remove stressed Junction from still being where it was.
-                junction.getRelatedConnectors().clear();
+                junction.relatedConnectors.clear();
             }
         }
     }
@@ -159,8 +157,8 @@ public class Cloth {
                 this.connectorArrayList.remove(connector);
 
                 //Get midpoint of broken connector
-                double midX = (connector.junctionA.getCurrentX() + connector.junctionB.getCurrentX()) / 2;
-                double midY = (connector.junctionA.getCurrentY() + connector.junctionB.getCurrentY()) / 2;
+                double midX = (connector.junctionA.currentPos.x + connector.junctionB.currentPos.x) / 2;
+                double midY = (connector.junctionA.currentPos.y + connector.junctionB.currentPos.y) / 2;
 
                 //Create two new junction to add as an endpoint for the replacement connectors and sets
                 //the default length to half the length of the original connector
@@ -175,47 +173,20 @@ public class Cloth {
                 //Also sets the length of the new connectors to half that of the broken connector
                 // in order to simulate tearing
                 Connector connector1 = new Connector(connector.junctionA, junction1);
-                connector1.setNormalLength(connector1.normalLength / 2);
-                connector1.setLength(connector1.normalLength);
+                connector1.normalLength = connector1.normalLength / 2;
+                connector1.length = connector1.normalLength;
 
                 Connector connector2 = new Connector(connector.junctionB, junction2);
-                connector2.setNormalLength(connector2.normalLength / 2);
-                connector2.setLength(connector2.normalLength);
+                connector2.normalLength = connector2.normalLength / 2;
+                connector2.length = connector2.normalLength;
 
                 //Adds the new connectors to the connector @link{ArrayList}
                 this.connectorArrayList.add(connector1);
                 this.connectorArrayList.add(connector2);
 
-                connector.junctionA.getRelatedConnectors().remove(connector);
-                connector.junctionB.getRelatedConnectors().remove(connector);
+                connector.junctionA.relatedConnectors.remove(connector);
+                connector.junctionB.relatedConnectors.remove(connector);
             }
         }
-    }
-
-    /**
-     * Getters and Setters
-     */
-    public int getStartJunctionX() {
-        return this.startJunctionX;
-    }
-
-    public void setStartJunctionX(int startJunctionX) {
-        this.startJunctionX = startJunctionX;
-    }
-
-    public int getStartJunctionY() {
-        return this.startJunctionY;
-    }
-
-    public void setStartJunctionY(int startJunctionY) {
-        this.startJunctionY = startJunctionY;
-    }
-
-    public ArrayList<Connector> getConnectorArrayList() {
-        return this.connectorArrayList;
-    }
-
-    public void setConnectorArrayList(ArrayList<Connector> connectorArrayList) {
-        this.connectorArrayList = connectorArrayList;
     }
 }

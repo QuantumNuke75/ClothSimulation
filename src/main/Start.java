@@ -2,9 +2,6 @@ package main;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Enumeration;
 
@@ -49,7 +46,7 @@ public class Start {
     /**
      * Creates a new instance of the JFrame and the ClothSimulation.
      *
-     * @param width - The width of the window.
+     * @param width  - The width of the window.
      * @param height - The height of the window.
      * @return The new instance of the {@link ClothSimulation}
      */
@@ -75,7 +72,7 @@ public class Start {
         //Start simulation button
         startSimulation.addActionListener(e -> {
             Variables.clothSimulation.togglePause();
-            if(Variables.isSimulationPaused)
+            if (Variables.isSimulationPaused)
                 startSimulation.setText("Unpause Simulation");
             else
                 startSimulation.setText("Pause Simulation");
@@ -93,7 +90,7 @@ public class Start {
 
         //Change listener for Gravity slider.
         gravitySlider.addChangeListener(e -> {
-            Variables.gravityStrength = gravitySlider.getValue() / 10f;
+            Variables.gravityStrength = -gravitySlider.getValue() / 10f;
         });
 
         //Change listener for Dampening slider.
@@ -211,7 +208,7 @@ public class Start {
 
         //Set the frame to visible.
         Variables.window.setVisible(true);
-        Variables.window.setExtendedState(Variables.window.MAXIMIZED_BOTH);
+        Variables.window.setExtendedState(Frame.MAXIMIZED_BOTH);
 
         //Return the instance of the current ClothSimulation.
         return Variables.clothSimulation;

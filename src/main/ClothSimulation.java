@@ -1,22 +1,18 @@
 package main;
 
 import org.jcodec.api.SequenceEncoder;
-import org.jcodec.api.awt.AWTSequenceEncoder;
-import org.jcodec.common.io.NIOUtils;
-import org.jcodec.common.io.SeekableByteChannel;
 import org.jcodec.common.model.ColorSpace;
 import org.jcodec.common.model.Picture;
-import org.jcodec.common.model.Rational;
 import org.jcodec.scale.AWTUtil;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -66,7 +62,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
     /**
      * Pauses and unpauses the running Caluclation Thread
      */
-    public void togglePause(){
+    public void togglePause() {
         Variables.isSimulationPaused = !Variables.isSimulationPaused;
     }
 
@@ -123,10 +119,10 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
                     g.setColor(Variables.connectorColor);
                 }
                 //The Screen Space coordinates of the start Junction.
-                int[] drawCoordinatesStart = convertSimulationCoordsToScreenSpaceCoords((int) connector.getJunctionA().getCurrentX(), (int) connector.getJunctionA().getCurrentY());
+                int[] drawCoordinatesStart = convertSimulationCoordsToScreenSpaceCoords((int) connector.junctionA.currentPos.x, (int) connector.junctionA.currentPos.y);
 
                 //The Screen Space coordinates of the end Junction.
-                int[] drawCoordinatesEnd = convertSimulationCoordsToScreenSpaceCoords((int) connector.getJunctionB().getCurrentX(), (int) connector.getJunctionB().getCurrentY());
+                int[] drawCoordinatesEnd = convertSimulationCoordsToScreenSpaceCoords((int) connector.junctionB.currentPos.x, (int) connector.junctionB.currentPos.y);
 
                 //Draw the Connector with the given coordinates.
                 g.drawLine(drawCoordinatesStart[0] + (this.getWidth() - thousandCoordinates[0]) / 2, drawCoordinatesStart[1] + (this.getHeight() - thousandCoordinates[1]) / 2, drawCoordinatesEnd[0] + (this.getWidth() - thousandCoordinates[0]) / 2, drawCoordinatesEnd[1] + (this.getHeight() - thousandCoordinates[1]) / 2);
@@ -147,23 +143,14 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
                 g.setColor(Variables.junctionColor);
 
                 //Gets the Screen Space coordinates of the Junction.
-                int[] drawCoordinates = convertSimulationCoordsToScreenSpaceCoords((int) junction.getCurrentX(), (int) junction.getCurrentY());
+                int[] drawCoordinates = convertSimulationCoordsToScreenSpaceCoords((int) junction.currentPos.x, (int) junction.currentPos.y);
 
                 //Draws the Junction with the given coordinates and width/height.
                 g.fillOval(drawCoordinates[0] - 2 + (this.getWidth() - thousandCoordinates[0]) / 2, drawCoordinates[1] - 2 + (this.getHeight() - thousandCoordinates[1]) / 2, 4, 4);
             }
         }
 
-        //Update position of dragged junction based on mouse location.
-        if (this.isDragging) {
-            //SwingUtilities.convertPointFromScreen(MouseInfo.getPointerInfo().getLocation(), this);
-            if (this.junctionBeingDragged != null) {
-                //Get the simulation coordinates from the Screen Space coordinates.
-                int[] drawCoordsInSimulationCoords = convertScreenSpaceCoordsToSimulationCoords(MouseInfo.getPointerInfo().getLocation().x - this.getLocationOnScreen().x - (this.getWidth() - thousandCoordinates[0]) / 2, MouseInfo.getPointerInfo().getLocation().y - this.getLocationOnScreen().y - (this.getHeight() - thousandCoordinates[1]) / 2);
-                this.junctionBeingDragged.setCurrentX(drawCoordsInSimulationCoords[0]);
-                this.junctionBeingDragged.setCurrentY(drawCoordsInSimulationCoords[1]);
-            }
-        }
+
     }
 
     /**
@@ -190,14 +177,14 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
                     int[] thousandCoordinates = convertSimulationCoordsToScreenSpaceCoords(1000, 1000);
 
                     //The coordinates of all the Junctions converted to Screen Space coordinates.
-                    int[] junction1SS = convertSimulationCoordsToScreenSpaceCoords((int) junction1.getCurrentX(), (int) junction1.getCurrentY());
-                    int[] junction2SS = convertSimulationCoordsToScreenSpaceCoords((int) junction2.getCurrentX(), (int) junction2.getCurrentY());
-                    int[] junction3SS = convertSimulationCoordsToScreenSpaceCoords((int) junction3.getCurrentX(), (int) junction3.getCurrentY());
-                    int[] junction4SS = convertSimulationCoordsToScreenSpaceCoords((int) junction4.getCurrentX(), (int) junction4.getCurrentY());
+                    int[] junction1SS = convertSimulationCoordsToScreenSpaceCoords((int) junction1.currentPos.x, (int) junction1.currentPos.y);
+                    int[] junction2SS = convertSimulationCoordsToScreenSpaceCoords((int) junction2.currentPos.x, (int) junction2.currentPos.y);
+                    int[] junction3SS = convertSimulationCoordsToScreenSpaceCoords((int) junction3.currentPos.x, (int) junction3.currentPos.y);
+                    int[] junction4SS = convertSimulationCoordsToScreenSpaceCoords((int) junction4.currentPos.x, (int) junction4.currentPos.y);
 
                     //The coordinates of all the vertices used for area calculation.
-                    int[] allXCalc = new int[]{(int) junction1.getCurrentX(), (int) junction2.getCurrentX(), (int) junction3.getCurrentX(), (int) junction4.getCurrentX()};
-                    int[] allYCalc = new int[]{(int) junction1.getCurrentY(), (int) junction2.getCurrentY(), (int) junction3.getCurrentY(), (int) junction4.getCurrentY()};
+                    int[] allXCalc = new int[]{(int) junction1.currentPos.x, (int) junction2.currentPos.x, (int) junction3.currentPos.x, (int) junction4.currentPos.x};
+                    int[] allYCalc = new int[]{(int) junction1.currentPos.y, (int) junction2.currentPos.y, (int) junction3.currentPos.y, (int) junction4.currentPos.y};
 
                     //The coordinates of all the vertices used to draw the polygon.
                     int[] allX = new int[]{junction1SS[0] + (this.getWidth() - thousandCoordinates[0]) / 2, junction2SS[0] + (this.getWidth() - thousandCoordinates[0]) / 2, junction3SS[0] + (this.getWidth() - thousandCoordinates[0]) / 2, junction4SS[0] + (this.getWidth() - thousandCoordinates[0]) / 2};
@@ -247,8 +234,8 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         if (junction1 == null || junction2 == null) {
             return false;
         }
-        for (Connector connector : junction1.getRelatedConnectors()) {
-            if (connector.getJunctionA().equals(junction2) || connector.getJunctionB().equals(junction2)) {
+        for (Connector connector : junction1.relatedConnectors) {
+            if (connector.junctionA.equals(junction2) || connector.junctionB.equals(junction2)) {
                 return true;
             }
         }
@@ -348,7 +335,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
             }
 
             //The coordinates of the Junction converted from simulation coordinates to the Screen Space coordinates.
-            int[] simulationCoords = convertSimulationCoordsToScreenSpaceCoords((int) junction.getCurrentX(), (int) junction.getCurrentY());
+            int[] simulationCoords = convertSimulationCoordsToScreenSpaceCoords((int) junction.currentPos.x, (int) junction.currentPos.y);
 
             //The maximum coordinates of the simulation converted into Screen Space coordinates.
             int[] thousandCoords = convertSimulationCoordsToScreenSpaceCoords(Variables.SIMULATION_WIDTH, Variables.SIMULATION_HEIGHT);
@@ -409,17 +396,17 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
             }
 
             //The coordinates of the Junction converted from simulation coordinates to the Screen Space coordinates.
-            int[] simulationCoords = convertSimulationCoordsToScreenSpaceCoords((int) junction.getCurrentX(), (int) junction.getCurrentY());
+            int[] simulationCoords = convertSimulationCoordsToScreenSpaceCoords((int) junction.currentPos.x, (int) junction.currentPos.y);
 
             //The maximum coordinates of the simulation converted into Screen Space coordinates.
             int[] thousandCoords = convertSimulationCoordsToScreenSpaceCoords(Variables.SIMULATION_WIDTH, Variables.SIMULATION_HEIGHT);
 
             //If the current Junction is within the bounds of the defined Rectangle.
             if (selectionBoxSimulation.contains(simulationCoords[0] + (this.getWidth() - thousandCoords[0]) / 2, simulationCoords[1] + (this.getHeight() - thousandCoords[1]) / 2)) {
-                if (junction.getJunctionState() != JunctionState.NORMAL) {
-                    junction.setJunctionState(JunctionState.NORMAL);
+                if (junction.junctionState != JunctionState.NORMAL) {
+                    junction.junctionState = JunctionState.NORMAL;
                 } else {
-                    junction.setJunctionState(JunctionState.ANCHOR);
+                    junction.junctionState = JunctionState.ANCHOR;
                 }
                 break;
             }
@@ -429,7 +416,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
     /**
      * Save the image.
      */
-    public void captureAndSaveImage(){
+    public void captureAndSaveImage() {
         BufferedImage bufferedImage = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB);
         Graphics graphics = bufferedImage.createGraphics();
         this.print(graphics);
@@ -446,7 +433,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         image_num++;
     }
 
-    public void createAsyncVideoThread(){
+    public void createAsyncVideoThread() {
         Thread createVideoThread = new CreateVideoThread();
         createVideoThread.start();
     }
@@ -504,9 +491,28 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         @Override
         public void run() {
             while (true) {
-                if(!Variables.isSimulationPaused) {
+                if (!Variables.isSimulationPaused) {
                     long firstTime = System.currentTimeMillis();
                     Variables.cloth.updateCloth();
+
+                    //Update position of dragged junction based on mouse location.
+                    if (Variables.clothSimulation.isDragging) {
+                        //SwingUtilities.convertPointFromScreen(MouseInfo.getPointerInfo().getLocation(), this);
+                        if (Variables.clothSimulation.junctionBeingDragged != null) {
+                            int[] thousandCoordinates = convertSimulationCoordsToScreenSpaceCoords(Variables.SIMULATION_WIDTH, Variables.SIMULATION_HEIGHT);
+
+                            //Get the simulation coordinates from the Screen Space coordinates.
+                            int[] drawCoordsInSimulationCoords = convertScreenSpaceCoordsToSimulationCoords(MouseInfo.getPointerInfo().getLocation().x - Variables.clothSimulation.getLocationOnScreen().x - (Variables.clothSimulation.getWidth() - thousandCoordinates[0]) / 2, MouseInfo.getPointerInfo().getLocation().y - Variables.clothSimulation.getLocationOnScreen().y - (Variables.clothSimulation.getHeight() - thousandCoordinates[1]) / 2);
+
+//                          Vector2D vectorBetween = new Vector2D(drawCoordsInSimulationCoords[0], drawCoordsInSimulationCoords[1]).getSubtracted(junctionBeingDragged.currentPos);
+//                          vectorBetween.normalize();
+//                          vectorBetween.multiply(50);
+//                          this.junctionBeingDragged.addForce(vectorBetween.getMultiplied(junctionBeingDragged.mass));
+
+                            Variables.clothSimulation.junctionBeingDragged.currentPos = new Vector2D(drawCoordsInSimulationCoords[0], drawCoordsInSimulationCoords[1]);
+                        }
+                    }
+
                     try {
                         Thread.sleep(Utils.FPStoMSPF(60));
                     } catch (InterruptedException e) {
@@ -515,8 +521,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
                     long secondTime = System.currentTimeMillis();
                     //System.out.println("Step took: " + (secondTime - firstTime) + " ms");
                     //System.out.println("Calculation per Second: " + (int) (1000.0 / (secondTime - firstTime)));
-                }
-                else{
+                } else {
                     try {
                         Thread.sleep(15);
                     } catch (InterruptedException e) {
@@ -526,6 +531,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
             }
         }
     }
+
     class CreateVideoThread extends Thread {
         @Override
         public void run() {
@@ -544,12 +550,12 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
                     Picture picture = AWTUtil.fromBufferedImage(image, ColorSpace.RGB);
                     //Encode the picture
                     enc.encodeNativeFrame(picture);
+                    Variables.start.createVideo.setText("Running " + "(" + (i+1) + "/" + (Variables.clothSimulation.image_num+1) + ")");
                 }
                 enc.finish();
                 Variables.start.createVideo.setText("Create Video");
                 Variables.start.createVideo.setEnabled(true);
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }

@@ -3,16 +3,16 @@ package main;
 public class Connector {
 
     //First junction
-    Junction junctionA;
+    public Junction junctionA;
 
     //Second junction
-    Junction junctionB;
+    public Junction junctionB;
 
     //Current length
-    Double length;
+    public Double length;
 
     //Normal length
-    Double normalLength = 20.0;
+    public Double normalLength = 20.0;
 
     /**
      * The constructor for a Connector.
@@ -30,7 +30,7 @@ public class Connector {
      */
     public double recalculateLength() {
         //Sets this length to the calculated length between the two Junctions.
-        this.length = Math.pow(Math.pow(junctionB.getCurrentX() - junctionA.getCurrentX(), 2) + Math.pow(junctionB.getCurrentY() - junctionA.getCurrentY(), 2), 0.5);
+        this.length = Math.pow(Math.pow(junctionB.currentPos.x - junctionA.currentPos.x, 2) + Math.pow(junctionB.currentPos.y - junctionA.currentPos.y, 2), 0.5);
         return this.length;
     }
 
@@ -39,62 +39,31 @@ public class Connector {
      */
     public void update(double dT) {
 
-        //get difference between two junctions
-        double differenceX = this.junctionA.getCurrentX() - this.junctionB.getCurrentX();
-        double differenceY = this.junctionA.getCurrentY() - this.junctionB.getCurrentY();
+//        Vector2D differenceVec = this.junctionA.currentPos.getSubtracted(junctionB.currentPos);
+//
+//        //recalculate length
+//        this.recalculateLength();
+//
+//        //percent difference from normal length
+//        double difference = (this.normalLength - this.length) / this.length;
+//        Vector2D translationVec = new Vector2D(differenceVec.x * difference * 0.5, differenceVec.y * difference * 0.5);
 
-        //recalculate length
+        //current connector constraint calculation
         this.recalculateLength();
+        Vector2D vectorBetween = junctionB.currentPos.getSubtracted(junctionA.currentPos);
+        Vector2D additionVector = vectorBetween.getMultiplied(1 - normalLength / length);
+        Vector2D additionVectorHalf = additionVector.getMultiplied(0.4);
 
-        //percent difference from normal length
-        double difference = (this.normalLength - this.length) / this.length;
-
-        //calculate translation amount for junctions
-        double translationX = differenceX * difference * 0.25;
-        double translationY = differenceY * difference * 0.25;
 
         //update the coordinates for one of the connected junctions if the junction is permitted to move
-        if (this.junctionA.getJunctionState() == JunctionState.NORMAL) {
-            this.junctionA.setCurrentX(this.junctionA.getCurrentX() + translationX);
-            this.junctionA.setCurrentY(this.junctionA.getCurrentY() + translationY);
+        if (this.junctionA.junctionState == JunctionState.NORMAL) {
+            this.junctionA.currentPos.add(additionVectorHalf);
         }
 
         //update the coordinates for one of the connected junctions if the junction is permitted to move
-        if (this.junctionB.getJunctionState() == JunctionState.NORMAL) {
-            this.junctionB.setCurrentX(this.junctionB.getCurrentX() - translationX);
-            this.junctionB.setCurrentY(this.junctionB.getCurrentY() - translationY);
+        if (this.junctionB.junctionState == JunctionState.NORMAL) {
+            this.junctionB.currentPos.subtract(additionVectorHalf);
         }
-    }
 
-
-    /**
-     * Getters and Setters
-     */
-    public Junction getJunctionA() {
-        return this.junctionA;
-    }
-
-    public void setJunctionA(Junction junctionA) {
-        this.junctionA = junctionA;
-    }
-
-    public Junction getJunctionB() {
-        return this.junctionB;
-    }
-
-    public void setJunctionB(Junction junctionB) {
-        this.junctionB = junctionB;
-    }
-
-    public void setLength(Double length) {
-        this.length = length;
-    }
-
-    public Double getNormalLength() {
-        return this.normalLength;
-    }
-
-    public void setNormalLength(Double normalLength) {
-        this.normalLength = normalLength;
     }
 }
