@@ -49,21 +49,21 @@ public class Connector {
 //        Vector2D translationVec = new Vector2D(differenceVec.x * difference * 0.5, differenceVec.y * difference * 0.5);
 
         //current connector constraint calculation
-        this.recalculateLength();
-        Vector2D vectorBetween = junctionB.currentPos.getSubtracted(junctionA.currentPos);
-        Vector2D additionVector = vectorBetween.getMultiplied(1 - normalLength / length);
-        Vector2D additionVectorHalf = additionVector.getMultiplied(0.4);
-
-
-        //update the coordinates for one of the connected junctions if the junction is permitted to move
-        if (this.junctionA.junctionState == JunctionState.NORMAL) {
-            this.junctionA.currentPos.add(additionVectorHalf);
-        }
-
-        //update the coordinates for one of the connected junctions if the junction is permitted to move
-        if (this.junctionB.junctionState == JunctionState.NORMAL) {
-            this.junctionB.currentPos.subtract(additionVectorHalf);
-        }
+//        this.recalculateLength();
+//        Vector2D vectorBetween = junctionB.currentPos.getSubtracted(junctionA.currentPos);
+//        Vector2D additionVector = vectorBetween.getMultiplied(1 - normalLength / length);
+//        Vector2D additionVectorHalf = additionVector.getMultiplied(0.5);
+//
+//
+//        //update the coordinates for one of the connected junctions if the junction is permitted to move
+//        if (this.junctionA.junctionState == JunctionState.NORMAL) {
+//            this.junctionA.currentPos.add(additionVectorHalf);
+//        }
+//
+//        //update the coordinates for one of the connected junctions if the junction is permitted to move
+//        if (this.junctionB.junctionState == JunctionState.NORMAL) {
+//            this.junctionB.currentPos.subtract(additionVectorHalf);
+//        }
 
     }
 }

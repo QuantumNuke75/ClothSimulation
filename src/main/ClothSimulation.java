@@ -16,6 +16,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
+//link FPS to sim speed?
+
 public class ClothSimulation extends JPanel implements MouseListener, MouseMotionListener {
 
     //The Junction being dragged.
@@ -497,7 +499,6 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
 
                     //Update position of dragged junction based on mouse location.
                     if (Variables.clothSimulation.isDragging) {
-                        //SwingUtilities.convertPointFromScreen(MouseInfo.getPointerInfo().getLocation(), this);
                         if (Variables.clothSimulation.junctionBeingDragged != null) {
                             int[] thousandCoordinates = convertSimulationCoordsToScreenSpaceCoords(Variables.SIMULATION_WIDTH, Variables.SIMULATION_HEIGHT);
 
@@ -538,6 +539,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
             try {
                 //Change text of button
                 Variables.start.createVideo.setText("Running");
+                //disable the button
                 Variables.start.createVideo.setEnabled(false);
 
                 //Create a sequence encoder
@@ -550,10 +552,15 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
                     Picture picture = AWTUtil.fromBufferedImage(image, ColorSpace.RGB);
                     //Encode the picture
                     enc.encodeNativeFrame(picture);
+                    //update button for progress text
                     Variables.start.createVideo.setText("Running " + "(" + (i+1) + "/" + (Variables.clothSimulation.image_num+1) + ")");
                 }
+                //finished encoding
                 enc.finish();
+
+                //reset text
                 Variables.start.createVideo.setText("Create Video");
+                //reenable the button
                 Variables.start.createVideo.setEnabled(true);
             } catch (IOException e) {
                 e.printStackTrace();

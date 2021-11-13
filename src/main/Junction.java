@@ -14,6 +14,8 @@ public class Junction {
     //Acceleration Related Variables
     public Vector2D acceleration;
 
+    public Vector2D velocity;
+
     //The current state of the particle
     public JunctionState junctionState;
 
@@ -21,7 +23,7 @@ public class Junction {
     public ArrayList<Connector> relatedConnectors = new ArrayList<>();
 
     //Mass of the particle
-    public float mass = 1.0f;
+    public float mass = 1f;
 
     /**
      * @param x             - The given x position of the Junction.
@@ -32,6 +34,7 @@ public class Junction {
         this.currentPos = new Vector2D(x, y);
         this.previousPos = new Vector2D(x, y);
         this.acceleration = new Vector2D(0, -Variables.gravityStrength);
+        this.velocity = new Vector2D();
         this.junctionState = junctionState;
     }
 
@@ -45,9 +48,37 @@ public class Junction {
         if (this.junctionState == JunctionState.NORMAL) {
 
             //current junction forces
-            acceleration = new Vector2D(Variables.newWindStrengthX, Variables.gravityStrength);
+//            acceleration = new Vector2D(Variables.newWindStrengthX, Variables.gravityStrength);
+//            Vector2D tempPos = currentPos;
+//            currentPos = currentPos.getAdded((currentPos.getSubtracted(previousPos)).getMultiplied(Variables.dampeningCoeff)
+//                    .getAdded(acceleration.getMultiplied(dT * dT)));
+//            previousPos = tempPos;
+
+
+            //connected neighbors
+            ArrayList<Junction> connectedNeighbors = new ArrayList<>();
+            for(Connector connector : relatedConnectors){
+                if(connector.junctionA != this){
+                    connectedNeighbors.add(connector.junctionA);
+                }
+                else{
+                    connectedNeighbors.add(connector.junctionB);
+                }
+            }
+
+            acceleration = new Vector2D();
             Vector2D tempPos = currentPos;
-            currentPos = currentPos.getAdded((currentPos.getSubtracted(previousPos)).getMultiplied(Variables.dampeningCoeff).getAdded(acceleration.getMultiplied(dT * dT)));
+            for(Junction neighbor : connectedNeighbors){
+                Vector2D dX = neighbor.currentPos.getSubtracted(this.currentPos);
+                acceleration.add(dX.getMultiplied(Variables.springConstant/mass).getMultiplied(1 - (20/dX.getLength())));
+            }
+
+            acceleration.add(Variables.newWindStrengthX, Variables.gravityStrength);
+
+
+            velocity.add(acceleration.getMultiplied(dT));
+            currentPos.add(velocity.getMultiplied(dT));
+
             previousPos = tempPos;
 
 
