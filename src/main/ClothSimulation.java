@@ -49,7 +49,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
      */
     public void run() {
         //Create image directory
-        File file = new File("C:\\Users\\ethan\\OneDrive\\Desktop\\Cloth Simulation Images\\" + this.folder);
+        File file = new File(System.getProperty("user.home") + "/Desktop" + "/Cloth Simulation Images/" + this.folder);
         file.mkdir();
 
         //Create and start a new PaintThread
@@ -428,7 +428,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
             int[] thousandCoords = convertSimulationCoordsToScreenSpaceCoords(Variables.SIMULATION_WIDTH, Variables.SIMULATION_HEIGHT);
             bufferedImage = bufferedImage.getSubimage((this.getWidth() - thousandCoords[0]) / 2, (this.getHeight() - thousandCoords[1]) / 2, thousandCoords[0], thousandCoords[1]);
             //Write the image to a specified file.
-            ImageIO.write(bufferedImage, "png", new File("C:\\Users\\ethan\\OneDrive\\Desktop\\Cloth Simulation Images\\" + this.folder + "\\" + this.image_num + ".png"));
+            ImageIO.write(bufferedImage, "png", new File(System.getProperty("user.home") + "\\Desktop" + "\\Cloth Simulation Images\\" + this.folder + "\\" + this.image_num + ".png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -543,11 +543,11 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
                 Variables.start.createVideo.setEnabled(false);
 
                 //Create a sequence encoder
-                SequenceEncoder enc = SequenceEncoder.createSequenceEncoder(new File("C:\\Users\\ethan\\OneDrive\\Desktop\\Cloth Simulation Images\\" + Variables.clothSimulation.folder + ".mp4"), 30);
+                SequenceEncoder enc = SequenceEncoder.createSequenceEncoder(new File(System.getProperty("user.home") + "\\Desktop" + "\\Cloth Simulation Images\\" + Variables.clothSimulation.folder + ".mp4"), 30);
                 //for all the images in the folder
                 for (int i = 0; i < Variables.clothSimulation.image_num; i++) {
                     //read the image
-                    BufferedImage image = ImageIO.read(new File("C:\\Users\\ethan\\OneDrive\\Desktop\\Cloth Simulation Images\\" + Variables.clothSimulation.folder + "\\" + i + ".png"));
+                    BufferedImage image = ImageIO.read(new File(System.getProperty("user.home") + "\\Desktop" + "\\Cloth Simulation Images\\" + Variables.clothSimulation.folder + "\\" + i + ".png"));
                     //convert BufferedImage to Picture
                     Picture picture = AWTUtil.fromBufferedImage(image, ColorSpace.RGB);
                     //Encode the picture

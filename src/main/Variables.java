@@ -21,10 +21,10 @@ public class Variables {
 
     //Settings Variables
     public static float windStrengthX = 0.0f;
-    public static float gravityStrength = -0.1f;
+    public static float gravityStrength = -0.3f;
     public static float dampeningCoeff = 0.99f;
     public static float newWindStrengthX;
-    public static double maxStress = 225;
+    public static double maxStress = 1000;
 
     //Boolean Settings Variables
     public static boolean drawJunction = false;
@@ -41,5 +41,8 @@ public class Variables {
     public static double dT = 0.25;
 
     //Spring Constant
-    public static double springConstant = 0.01;
+    public static double springConstant = 0.02;
+
+    //Dampening Factor
+    public static double dampeningFactor = 0.01;
 }

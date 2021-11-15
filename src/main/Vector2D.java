@@ -114,4 +114,8 @@ public class Vector2D {
     public Vector2D getDivided(double scalar) {
         return new Vector2D(x / scalar, y / scalar);
     }
+
+    public double dot(Vector2D v) {
+        return (this.x * v.x + this.y * v.y);
+    }
 }

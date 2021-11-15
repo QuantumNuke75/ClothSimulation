@@ -39,6 +39,28 @@ public class Connector {
      */
     public void update(double dT) {
 
+
+        Vector2D differenceVec = this.junctionA.currentPos.getSubtracted(junctionB.currentPos).getNormalized();
+
+        junctionA.velocity.dot(differenceVec);
+        junctionB.velocity.dot(differenceVec);
+
+        double fsd = -Variables.springConstant*(normalLength-length)-Variables.dampeningFactor*(junctionA.velocity.getLength() - junctionB.velocity.getLength());
+
+        junctionA.acceleration = differenceVec.getMultiplied(-fsd);
+        junctionB.acceleration = differenceVec.getMultiplied(fsd);
+
+
+        if (this.junctionA.junctionState == JunctionState.NORMAL) {
+            junctionA.velocity.add(junctionA.acceleration.getMultiplied(dT));
+            junctionA.currentPos.add(junctionA.velocity.getMultiplied(dT));
+        }
+
+        if (this.junctionB.junctionState == JunctionState.NORMAL) {
+            junctionB.velocity.add(junctionB.acceleration.getMultiplied(dT));
+            junctionB.currentPos.add(junctionB.velocity.getMultiplied(dT));
+        }
+
 //        Vector2D differenceVec = this.junctionA.currentPos.getSubtracted(junctionB.currentPos);
 //
 //        //recalculate length

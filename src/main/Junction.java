@@ -55,32 +55,31 @@ public class Junction {
 //            previousPos = tempPos;
 
 
-            //connected neighbors
-            ArrayList<Junction> connectedNeighbors = new ArrayList<>();
-            for(Connector connector : relatedConnectors){
-                if(connector.junctionA != this){
-                    connectedNeighbors.add(connector.junctionA);
-                }
-                else{
-                    connectedNeighbors.add(connector.junctionB);
-                }
-            }
+//            //connected neighbors
+//            ArrayList<Junction> connectedNeighbors = new ArrayList<>();
+//            for(Connector connector : relatedConnectors){
+//                if(connector.junctionA != this){
+//                    connectedNeighbors.add(connector.junctionA);
+//                }
+//                else{
+//                    connectedNeighbors.add(connector.junctionB);
+//                }
+//            }
+//
+//            acceleration = new Vector2D();
+//            Vector2D tempPos = currentPos;
+//            for(Junction neighbor : connectedNeighbors){
+//                Vector2D dX = neighbor.currentPos.getSubtracted(this.currentPos);
+//                acceleration.add(dX.getMultiplied(Variables.springConstant/mass).getMultiplied(1 - (20/dX.getLength())));
+//            }
+//            acceleration.add(Variables.newWindStrengthX, Variables.gravityStrength);
+//            velocity.add(acceleration.getMultiplied(dT));
+//            currentPos.add(velocity.getMultiplied(dT));
+//            previousPos = tempPos;
 
-            acceleration = new Vector2D();
-            Vector2D tempPos = currentPos;
-            for(Junction neighbor : connectedNeighbors){
-                Vector2D dX = neighbor.currentPos.getSubtracted(this.currentPos);
-                acceleration.add(dX.getMultiplied(Variables.springConstant/mass).getMultiplied(1 - (20/dX.getLength())));
-            }
-
-            acceleration.add(Variables.newWindStrengthX, Variables.gravityStrength);
-
-
+            acceleration = new Vector2D(Variables.newWindStrengthX, Variables.gravityStrength);
             velocity.add(acceleration.getMultiplied(dT));
             currentPos.add(velocity.getMultiplied(dT));
-
-            previousPos = tempPos;
-
 
             //Check for out of bounds on the y-axis.
             if (this.currentPos.y > Variables.SIMULATION_HEIGHT) {
