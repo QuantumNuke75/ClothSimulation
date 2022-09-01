@@ -30,6 +30,8 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
     String folder = UUID.randomUUID().toString();
     int image_num = 0;
 
+    boolean recordingEnabled = false;
+
     //Threads
     Thread paintThread;
     Thread calculationThread;
@@ -49,7 +51,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
      */
     public void run() {
         //Create image directory
-        File file = new File(System.getProperty("user.home") + "/Desktop" + "/Cloth Simulation Images/" + this.folder);
+        File file = new File(System.getProperty("user.home") + "\\OneDrive\\Desktop\\Cloth Simulation Images\\" + this.folder);
         file.mkdir();
 
         //Create and start a new PaintThread
@@ -107,8 +109,8 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
                 //If the option showStress is enabled.
                 if (Variables.showStress) {
                     //Red and green RBG values based on length of the Connector.
-                    int red = (int) (255 * (1 - connector.recalculateLength() / 75));
-                    int green = (int) (200 * (1 - connector.recalculateLength() / 75));
+                    int red = (int) (255 * (1 - connector.recalculateLength() / ( Variables.maxStress / 4 )));
+                    int green = (int) (200 * (1 - connector.recalculateLength() / ( Variables.maxStress / 4 )));
 
                     //Validate the bounds of the red and green RBG values.
                     red = validateColorBounds(red);
@@ -162,15 +164,15 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
      */
     public void colorAreas(Graphics2D g) {
 
-        for (int i = 0; i < Variables.JUNCTION_COUNT_X * Variables.JUNCTION_COUNT_Y; i++) {
+        for (int i = 0; i < Variables.JUNCTION_COUNT_Y * Variables.JUNCTION_COUNT_X; i++) {
 
             //If selected junction is not last row or column
-            if (getRowFromNumber(i) < Variables.JUNCTION_COUNT_Y - 1 && getColFromNumber(i) < Variables.JUNCTION_COUNT_X - 1) {
+            if (getRowFromNumber(i) < Variables.JUNCTION_COUNT_X - 1 && getColFromNumber(i) < Variables.JUNCTION_COUNT_Y - 1) {
 
                 Junction junction1 = Variables.cloth.junctionsArrayList.get(i);
                 Junction junction2 = Variables.cloth.junctionsArrayList.get(i + 1);
-                Junction junction3 = Variables.cloth.junctionsArrayList.get(i + Variables.JUNCTION_COUNT_Y + 1);
-                Junction junction4 = Variables.cloth.junctionsArrayList.get(i + Variables.JUNCTION_COUNT_Y);
+                Junction junction3 = Variables.cloth.junctionsArrayList.get(i + Variables.JUNCTION_COUNT_X + 1);
+                Junction junction4 = Variables.cloth.junctionsArrayList.get(i + Variables.JUNCTION_COUNT_X);
 
                 //If all Junctions form a valid area.
                 if (junctionConnectedToJunction(junction1, junction2) && junctionConnectedToJunction(junction2, junction3) && junctionConnectedToJunction(junction3, junction4) && junctionConnectedToJunction(junction4, junction1)) {
@@ -251,7 +253,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
      * @returns the row.
      */
     public int getRowFromNumber(int num) {
-        return (int) Math.floor(num / Variables.JUNCTION_COUNT_X);
+        return (int) Math.floor(num / Variables.JUNCTION_COUNT_Y);
     }
 
     /**
@@ -261,7 +263,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
      * @returns the column.
      */
     public int getColFromNumber(int num) {
-        return num % Variables.JUNCTION_COUNT_Y;
+        return num % Variables.JUNCTION_COUNT_X;
     }
 
     /**
@@ -428,7 +430,7 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
             int[] thousandCoords = convertSimulationCoordsToScreenSpaceCoords(Variables.SIMULATION_WIDTH, Variables.SIMULATION_HEIGHT);
             bufferedImage = bufferedImage.getSubimage((this.getWidth() - thousandCoords[0]) / 2, (this.getHeight() - thousandCoords[1]) / 2, thousandCoords[0], thousandCoords[1]);
             //Write the image to a specified file.
-            ImageIO.write(bufferedImage, "png", new File(System.getProperty("user.home") + "\\Desktop" + "\\Cloth Simulation Images\\" + this.folder + "\\" + this.image_num + ".png"));
+            ImageIO.write(bufferedImage, "png", new File(System.getProperty("user.home") + "\\OneDrive\\Desktop" + "\\Cloth Simulation Images\\" + this.folder + "\\" + this.image_num + ".png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -475,7 +477,9 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
                 long firstTime = System.currentTimeMillis();
                 Variables.clothSimulation.repaint();
                 if (!Variables.isSimulationPaused) {
-                    captureAndSaveImage();
+                    if(recordingEnabled){
+                        captureAndSaveImage();
+                    }
                 }
                 try {
                     Thread.sleep(Utils.FPStoMSPF(60));
@@ -505,15 +509,12 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
                             //Get the simulation coordinates from the Screen Space coordinates.
                             int[] drawCoordsInSimulationCoords = convertScreenSpaceCoordsToSimulationCoords(MouseInfo.getPointerInfo().getLocation().x - Variables.clothSimulation.getLocationOnScreen().x - (Variables.clothSimulation.getWidth() - thousandCoordinates[0]) / 2, MouseInfo.getPointerInfo().getLocation().y - Variables.clothSimulation.getLocationOnScreen().y - (Variables.clothSimulation.getHeight() - thousandCoordinates[1]) / 2);
 
-//                          Vector2D vectorBetween = new Vector2D(drawCoordsInSimulationCoords[0], drawCoordsInSimulationCoords[1]).getSubtracted(junctionBeingDragged.currentPos);
-//                          vectorBetween.normalize();
-//                          vectorBetween.multiply(50);
-//                          this.junctionBeingDragged.addForce(vectorBetween.getMultiplied(junctionBeingDragged.mass));
-
+                            //Set new position of Junction based on mouse location
                             Variables.clothSimulation.junctionBeingDragged.currentPos = new Vector2D(drawCoordsInSimulationCoords[0], drawCoordsInSimulationCoords[1]);
                         }
                     }
 
+                    //Sleep for equivalent of 60 fps
                     try {
                         Thread.sleep(Utils.FPStoMSPF(60));
                     } catch (InterruptedException e) {
@@ -533,6 +534,20 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
         }
     }
 
+    /**
+     * Method used for enabling/creating video of the cloth.
+     */
+    public void handleVideoButtonClick(){
+        if(!recordingEnabled){
+            recordingEnabled = true;
+            Variables.start.createVideo.setText("Create Video");
+        }
+        else{
+            this.createAsyncVideoThread();
+        }
+    }
+
+
     class CreateVideoThread extends Thread {
         @Override
         public void run() {
@@ -543,17 +558,22 @@ public class ClothSimulation extends JPanel implements MouseListener, MouseMotio
                 Variables.start.createVideo.setEnabled(false);
 
                 //Create a sequence encoder
-                SequenceEncoder enc = SequenceEncoder.createSequenceEncoder(new File(System.getProperty("user.home") + "\\Desktop" + "\\Cloth Simulation Images\\" + Variables.clothSimulation.folder + ".mp4"), 30);
+                SequenceEncoder enc = SequenceEncoder.createSequenceEncoder(new File(System.getProperty("user.home") + "\\OneDrive\\Desktop" + "\\Cloth Simulation Images\\" + Variables.clothSimulation.folder + ".mp4"), 30);
                 //for all the images in the folder
                 for (int i = 0; i < Variables.clothSimulation.image_num; i++) {
                     //read the image
-                    BufferedImage image = ImageIO.read(new File(System.getProperty("user.home") + "\\Desktop" + "\\Cloth Simulation Images\\" + Variables.clothSimulation.folder + "\\" + i + ".png"));
+                    File imageFile = new File(System.getProperty("user.home") + "\\OneDrive\\Desktop" + "\\Cloth Simulation Images\\" + Variables.clothSimulation.folder + "\\" + i + ".png");
+                    if(!imageFile.exists()){
+                       continue;
+                    }
+                    BufferedImage image = ImageIO.read(imageFile);
                     //convert BufferedImage to Picture
                     Picture picture = AWTUtil.fromBufferedImage(image, ColorSpace.RGB);
                     //Encode the picture
                     enc.encodeNativeFrame(picture);
                     //update button for progress text
-                    Variables.start.createVideo.setText("Running " + "(" + (i+1) + "/" + (Variables.clothSimulation.image_num+1) + ")");
+                    //Variables.start.createVideo.setText("Running " + "(" + (i+1) + "/" + (Variables.clothSimulation.image_num+1) + ")");
+                    Variables.start.createVideo.setText("Running " + "(" + (int)((i/(float)Variables.clothSimulation.image_num)*100) + "/" + (100) + ")");
                 }
                 //finished encoding
                 enc.finish();

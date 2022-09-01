@@ -9,8 +9,8 @@ public class Variables {
     public static final int SIMULATION_WIDTH = 1000;
     public static final int SIMULATION_HEIGHT = SIMULATION_WIDTH;
 
-    public static final int JUNCTION_COUNT_X = 21;
     public static final int JUNCTION_COUNT_Y = 21;
+    public static final int JUNCTION_COUNT_X = 21;
     public static final int JUNCTION_DISTANCE = 20;
 
     //Easy Reference Variables
@@ -38,10 +38,10 @@ public class Variables {
 
     //Other
     public static boolean isSimulationPaused = true;
-    public static double dT = 0.25;
+    public static double dT = 1.0f;
 
     //Spring Constant
-    public static double springConstant = 0.02;
+    public static double springConstant = 0.75;
 
     //Dampening Factor
     public static double dampeningFactor = 0.01;

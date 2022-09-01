@@ -25,6 +25,9 @@ public class Junction {
     //Mass of the particle
     public float mass = 1f;
 
+    public int row;
+    public int col;
+
     /**
      * @param x             - The given x position of the Junction.
      * @param y             - The given y position of the Junction.
@@ -47,39 +50,54 @@ public class Junction {
     public void update(double dT) {
         if (this.junctionState == JunctionState.NORMAL) {
 
-            //current junction forces
-//            acceleration = new Vector2D(Variables.newWindStrengthX, Variables.gravityStrength);
-//            Vector2D tempPos = currentPos;
-//            currentPos = currentPos.getAdded((currentPos.getSubtracted(previousPos)).getMultiplied(Variables.dampeningCoeff)
-//                    .getAdded(acceleration.getMultiplied(dT * dT)));
-//            previousPos = tempPos;
-
-
-//            //connected neighbors
-//            ArrayList<Junction> connectedNeighbors = new ArrayList<>();
-//            for(Connector connector : relatedConnectors){
-//                if(connector.junctionA != this){
-//                    connectedNeighbors.add(connector.junctionA);
-//                }
-//                else{
-//                    connectedNeighbors.add(connector.junctionB);
-//                }
-//            }
-//
-//            acceleration = new Vector2D();
-//            Vector2D tempPos = currentPos;
-//            for(Junction neighbor : connectedNeighbors){
-//                Vector2D dX = neighbor.currentPos.getSubtracted(this.currentPos);
-//                acceleration.add(dX.getMultiplied(Variables.springConstant/mass).getMultiplied(1 - (20/dX.getLength())));
-//            }
-//            acceleration.add(Variables.newWindStrengthX, Variables.gravityStrength);
-//            velocity.add(acceleration.getMultiplied(dT));
-//            currentPos.add(velocity.getMultiplied(dT));
-//            previousPos = tempPos;
-
+            // Vertlet-like with dampening
             acceleration = new Vector2D(Variables.newWindStrengthX, Variables.gravityStrength);
+            Vector2D tempPos = currentPos;
+            currentPos = currentPos.getAdded( (currentPos.getSubtracted(previousPos)).getMultiplied(Variables.dampeningCoeff)
+                    .getAdded(acceleration.getMultiplied(dT * dT)) );
+            previousPos = tempPos;
+
+
+            // Vertlet integration
+/*            acceleration = new Vector2D(Variables.newWindStrengthX, Variables.gravityStrength);
+            Vector2D prev = new Vector2D(this.currentPos.x, this.currentPos.y);
+            currentPos.x = currentPos.x * 2 - this.previousPos.x + acceleration.x * (dT * dT);
+            currentPos.y = currentPos.y * 2 - this.previousPos.y + acceleration.y * (dT * dT);
+
+            this.previousPos.x = prev.x;
+            this.previousPos.y = prev.y;
+*/
+
+
+            // Spring Mass System
+/*            ArrayList<Junction> connectedNeighbors = new ArrayList<>();
+            for(Connector connector : relatedConnectors){
+                if(connector.junctionA != this){
+                    connectedNeighbors.add(connector.junctionA);
+                }
+                else{
+                    connectedNeighbors.add(connector.junctionB);
+                }
+            }
+
+            acceleration = new Vector2D();
+            Vector2D tempPos = currentPos;
+            for(Junction neighbor : connectedNeighbors){
+                Vector2D dX = neighbor.currentPos.getSubtracted(this.currentPos);
+                acceleration.add(dX.getMultiplied(Variables.springConstant/mass).getMultiplied(1 - (20/dX.getLength())));
+            }
+            acceleration.add(Variables.newWindStrengthX, Variables.gravityStrength);
             velocity.add(acceleration.getMultiplied(dT));
             currentPos.add(velocity.getMultiplied(dT));
+            previousPos = tempPos;
+*/
+
+
+            // Euler
+/*          acceleration = new Vector2D(Variables.newWindStrengthX, Variables.gravityStrength);
+          velocity.add(acceleration.getMultiplied(dT));
+          currentPos.add(velocity.getMultiplied(dT));
+*/
 
             //Check for out of bounds on the y-axis.
             if (this.currentPos.y > Variables.SIMULATION_HEIGHT) {
@@ -104,7 +122,8 @@ public class Junction {
         }
     }
 
-    public void addForce(Vector2D force) {
-        acceleration.add(force.x / mass, force.y / mass);
+    public String toString() {
+        return "(" + this.col + ", " + this.row + ")";
     }
+
 }

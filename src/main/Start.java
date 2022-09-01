@@ -21,7 +21,7 @@ public class Start {
     JButton toggleShading = new JButton("Show Shading: Off");
 
     JButton startSimulation = new JButton("Start Simulation");
-    JButton createVideo = new JButton("Create Video");
+    JButton createVideo = new JButton("Enable Video");
 
     JButton selectJunctionColor = new JButton("Junction Color Picker");
     JButton selectConnectorColor = new JButton("Connector Color Picker");
@@ -80,7 +80,7 @@ public class Start {
 
         //Create video button
         createVideo.addActionListener(e -> {
-            Variables.clothSimulation.createAsyncVideoThread();
+            Variables.clothSimulation.handleVideoButtonClick();
         });
 
         //Change listener for Wind slider.
@@ -167,9 +167,6 @@ public class Start {
         //Sets the background of the options JPanel to black
         options.setBackground(Color.BLACK);
 
-        //Sets the layout of the options' menu.
-        options.setLayout(new GridLayout(8, 2));
-
         //Adds all the options to the options JPanel.
         //Add wind options
         options.add(windText);
@@ -202,6 +199,9 @@ public class Start {
 
         //Video Creation
         options.add(createVideo);
+
+        //Sets the layout of the options' menu.
+        options.setLayout(new GridLayout(options.getComponentCount()/2, 2));
 
         //Pack the frame.
         Variables.window.pack();
